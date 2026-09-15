@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(bun:*)",
+      "Shell(npx tsc --noEmit)",
+      "Shell(if:*)",
+      "Shell(Test-Path:*)",
+      "Shell({:*)",
+      "Shell(node --version)",
+      "Shell(npm:*)",
+      "powershell",
+      "Shell(.node_modules.bintsc:*)",
+      "Shell(powershell -Command \"(Invoke-WebRequest -Uri 'http://localhost:3000/' -UseBasicParsing).StatusCode; (Invoke-WebRequest -Uri 'http://localhost:3000/src/main.tsx' -UseBasicParsing).StatusCode\")",
+      "Shell(powershell -Command \"$urls = @('http://localhost:3000/src/pages/admin/ClubAdminsPage.tsx','http://localhost:3000/src/pages/admin/ClubFeePage.tsx','http://localhost:3000/src/pages/admin/ClubProfilePage.tsx','http://localhost:3000/src/services/payments/sslCommerzService.ts','http://localhost:3000/src/components/payments/ReceiptModal.tsx','http://localhost:3000/src/pages/student/StudentDashboardPage.tsx'); foreach ($u in $urls) { try { $r = Invoke-WebRequest -Uri $u -UseBasicParsing; Write-Host ($r.StatusCode.ToString() + ' ' + $u) } catch { Write-Host ('FAIL ' + $u + ' ' + $_.Exception.Message) } }\")",
+      "Shell(agent-browser:*)",
+      "Shell(powershell -Command \"try { (Invoke-WebRequest -Uri 'http://localhost:3000/login' -UseBasicParsing -TimeoutSec 10).StatusCode } catch { 'FAIL: ' + $_.Exception.Message }\")"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}

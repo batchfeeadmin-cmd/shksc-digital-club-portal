@@ -1,0 +1,25 @@
+- Communicates in Bengali written in Latin script (Banglish); prefers informal, conversational replies in the same style. Confidence: 0.9
+- When weighing a technical choice, prefers the assistant to give a clear recommendation/verdict rather than just listing options. Confidence: 0.7
+- Prefers to be the decision-maker and direct the work: wants the assistant to follow their explicit instructions ("ami ja boli tai korba") rather than propose its own plan. Confidence: 0.7
+- Prefers SSLCommerz as the payment gateway for handling payments in the app. Confidence: 0.9
+- Prefers approval-gated workflows: root admin can apply changes directly, while club-admin edits (fees, profile, info, achievements, gallery) require root-admin approval before going live; club admins should be able to view and edit all of their own club's content, with changes going live only after approval. Confidence: 0.85
+- Values polished, dynamic UI — dislikes flat/plain-white pages and explicitly asks for animations, shine effects, moving borders, and a premium feel (e.g., "sundor" receipt, animated homepage). Confidence: 0.85
+- Prefers solid colors over gradients in the UI — finds gradients scattered/messy. Confidence: 0.85
+- Treats typography as the most dominant visual element; color should follow typography. Confidence: 0.8
+- Wants the site color scheme limited to 3 colors: navy blue family, amber, and green. Confidence: 0.9
+- For image/poster generation requests, prefers a single copy-paste-ready "master prompt" written in English for the image generator, along with generator settings and practical tips. Confidence: 0.6
+- Prefers content/data organized into per-entity files in a dedicated folder (e.g., one file per club) rather than one large mock-data file. Confidence: 0.8
+- Prefers the assistant to scaffold the file/folder structure and templates, then supplies the real content themselves (e.g., "tumi file make kore felo, ami info rakhbo"). Confidence: 0.8
+- Delivers real assets/data incrementally and expects the assistant to wire each piece in as it arrives (e.g., set the main school logo everywhere first, individual club logos later; generate the hero poster, then hand over the path to be added; send a real photo and say "add korefelo"). Confidence: 0.8
+- Prefers to verify changes by running the app locally (dev server) and inspecting it in the browser rather than relying on build/typecheck output alone. Confidence: 0.7
+- When a section needs a real photo (not an AI-generated image), asks the assistant what to supply and expects concrete specs — aspect ratio, resolution, composition, subject — plus a clear recommendation. Confidence: 0.55
+- Cares about website performance/load speed: wants images compressed, resized, and web-optimized (e.g., PNG → JPEG) before being added, rather than added at full original size. Confidence: 0.85
+- Wants a single unified main website (the SHKSC digital club portal) that holds all clubs' details in one place, not separate websites or standalone pages per club. Confidence: 0.85
+- Prefers consistent, reusable treatment across all clubs — when one club's page gets a rich/polished design, expects the remaining clubs to receive the same level of polish (rather than one-off bespoke pages). Confidence: 0.85
+- Prefers data-rich content rendered as visual/interactive components — animated count-up stat cards, horizontal bar charts for year-over-year figures, accordions for multi-year lists (to reduce clutter), filterable galleries, and vertical timeline animations — over plain tables or static text. Confidence: 0.8
+- Values content consistency and accuracy: proactively flags discrepancies (e.g., inconsistent name spellings like "মাহবুবর" vs "মাহবুবুর") and wants a single canonical spelling/term used everywhere before publishing. Confidence: 0.7
+- Prefers long-form narrative content (e.g., a club's full history) kept on a dedicated page rather than overwhelming the main club page. Confidence: 0.65
+- Delivers content specifications as structured markdown (headings, tables, bullet lists) and expects the assistant to translate that structure directly into matching page sections. Confidence: 0.6
+- Prefers to hand over a whole folder of raw image assets and have the assistant autonomously organize and wire them all in — rename to clean filenames, assign gallery categories, set logo/cover — rather than being asked per image (e.g., "system kore shob add kore felo"). Confidence: 0.6
+- Is deadline/demo-driven: when a submission or stakeholder demo (e.g., to "sir") is approaching, prioritizes finishing the essential/basic flows so the project is presentable, and explicitly defers non-essential polish or remaining content to later. Confidence: 0.7
+- Wants every interactive element (buttons, links, sidebar items) to actually work — treats dead links ("#") and no-op buttons as unacceptable — and expects a systematic click-through verification of all controls before a demo/submission. Confidence: 0.8
