@@ -39,7 +39,8 @@ const buildDiffFields = (request: UpdateRequest, currentClubData: any): DiffFiel
         { key: 'name', label: 'Full Name', current: account?.name, requested: request.data.name },
         { key: 'email', label: 'Email (Login ID)', current: account?.email, requested: request.data.email },
         { key: 'mobile', label: 'Mobile', current: account?.mobile || '—', requested: request.data.mobile || '—' },
-        { key: 'designation', label: 'Designation', current: account?.designation || '—', requested: request.data.designation || '—' }
+        { key: 'designation', label: 'Designation', current: account?.designation || '—', requested: request.data.designation || '—' },
+        { key: 'profilePicture', label: 'Profile Picture URL', current: account?.profilePicture || '—', requested: request.data.profilePicture || '—' }
       ];
     }
 

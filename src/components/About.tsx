@@ -14,6 +14,7 @@ export function About() {
 
   return (
     <section id="about" className="py-24 bg-white relative overflow-hidden">
+      {/* Background Elements */}
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-accent-100 rounded-full blur-3xl opacity-50 animate-float"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable } from '../../components/admin/DataTable';
 import { Button } from '../../components/ui/button';
+import { ImageCropper } from '../../components/ui/ImageCropper';
 import { UserPlus, Pencil, Trash2, X, KeyRound } from 'lucide-react';
 import { UserAccount } from '../../types';
 import { getAllUsers, createUser, updateUser, deleteUser } from '../../services/auth/userService';
@@ -15,6 +16,11 @@ interface AccountFormState {
   mobile: string;
   designation: string;
   clubId: string;
+  status: 'Active' | 'Inactive';
+  userType: 'Teacher' | 'Student' | 'Other';
+  accessLevel: 'Full Access' | 'Editor' | 'Viewer';
+  department: string;
+  profilePicture: string;
 }
 
 const emptyForm: AccountFormState = {
@@ -22,8 +28,13 @@ const emptyForm: AccountFormState = {
   email: '',
   password: '',
   mobile: '',
-  designation: '',
-  clubId: ''
+  designation: 'Club Moderator',
+  clubId: '',
+  status: 'Active',
+  userType: 'Teacher',
+  accessLevel: 'Full Access',
+  department: '',
+  profilePicture: ''
 };
 
 export function ClubAdminsPage() {
@@ -59,8 +70,13 @@ export function ClubAdminsPage() {
       email: admin.email,
       password: '',
       mobile: admin.mobile || '',
-      designation: admin.designation || '',
-      clubId: admin.clubId || ''
+      designation: admin.designation || 'Club Moderator',
+      clubId: admin.clubId || '',
+      status: admin.status || 'Active',
+      userType: admin.userType || 'Teacher',
+      accessLevel: admin.accessLevel || 'Full Access',
+      department: admin.department || '',
+      profilePicture: admin.profilePicture || ''
     });
     setFormError('');
     setModalOpen(true);
@@ -93,6 +109,11 @@ export function ClubAdminsPage() {
         email: form.email,
         mobile: form.mobile,
         designation: form.designation,
+        status: form.status,
+        userType: form.userType,
+        accessLevel: form.accessLevel,
+        department: form.department,
+        profilePicture: form.profilePicture,
         clubId: form.clubId,
         ...(form.password ? { password: form.password } : {})
       });
@@ -110,6 +131,11 @@ export function ClubAdminsPage() {
         password: form.password,
         mobile: form.mobile,
         designation: form.designation,
+        status: form.status,
+        userType: form.userType,
+        accessLevel: form.accessLevel,
+        department: form.department,
+        profilePicture: form.profilePicture,
         clubId: form.clubId,
         role: 'club_admin'
       });
@@ -147,6 +173,7 @@ export function ClubAdminsPage() {
     { header: 'Club', accessor: 'clubId', render: (val: string) => <span className="text-gray-700">{clubNameOf(val)}</span> },
     { header: 'Designation', accessor: 'designation', render: (val: string) => <span className="text-gray-700">{val || '—'}</span> },
     { header: 'Mobile', accessor: 'mobile', render: (val: string) => <span className="text-gray-700">{val || '—'}</span> },
+    { header: 'Status', accessor: 'status', render: (val: string) => <span className={`px-2 py-0.5 rounded text-xs font-bold ${val === 'Inactive' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{val || 'Active'}</span> },
     {
       header: 'Actions',
       accessor: 'id',
@@ -209,6 +236,14 @@ export function ClubAdminsPage() {
                 </div>
               )}
 
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-3 text-center">Profile Picture</label>
+                <ImageCropper 
+                  value={form.profilePicture} 
+                  onChange={(val) => setForm({ ...form, profilePicture: val })} 
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Full Name *</label>
                 <input
@@ -256,6 +291,58 @@ export function ClubAdminsPage() {
                 </div>
               </div>
 
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">User Type</label>
+                  <select
+                    value={form.userType}
+                    onChange={e => setForm({ ...form, userType: e.target.value as any })}
+                    className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white"
+                  >
+                    <option value="Teacher">Teacher</option>
+                    <option value="Student">Student</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                {form.userType === 'Teacher' && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Department / Subject</label>
+                    <input
+                      type="text"
+                      list="school-subjects"
+                      value={form.department}
+                      onChange={e => setForm({ ...form, department: e.target.value })}
+                      className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white"
+                      placeholder="e.g. Physics"
+                    />
+                    <datalist id="school-subjects">
+                      <option value="Bangla" />
+                      <option value="English" />
+                      <option value="Mathematics" />
+                      <option value="Science" />
+                      <option value="Physics" />
+                      <option value="Chemistry" />
+                      <option value="Biology" />
+                      <option value="Higher Mathematics" />
+                      <option value="Bangladesh and Global Studies" />
+                      <option value="Religion and Moral Education" />
+                      <option value="Information and Communication Technology (ICT)" />
+                      <option value="Accounting" />
+                      <option value="Finance & Banking" />
+                      <option value="Business Entrepreneurship" />
+                      <option value="Economics" />
+                      <option value="Geography and Environment" />
+                      <option value="History of Bangladesh and World Civilization" />
+                      <option value="Civics and Citizenship" />
+                      <option value="Agriculture Studies" />
+                      <option value="Home Science" />
+                      <option value="Physical Education and Health" />
+                      <option value="Arts and Crafts" />
+                    </datalist>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Assigned Club *</label>
                 <select
@@ -270,15 +357,45 @@ export function ClubAdminsPage() {
                 </select>
               </div>
 
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Designation</label>
+                  <select
+                    value={form.designation}
+                    onChange={e => setForm({ ...form, designation: e.target.value })}
+                    className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white"
+                  >
+                    <option value="Club Moderator">Club Moderator</option>
+                    <option value="President">President</option>
+                    <option value="General Secretary">General Secretary</option>
+                    <option value="Faculty Advisor">Faculty Advisor</option>
+                    <option value="Executive Member">Executive Member</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Account Status</label>
+                  <select
+                    value={form.status}
+                    onChange={e => setForm({ ...form, status: e.target.value as 'Active' | 'Inactive' })}
+                    className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive (Suspended)</option>
+                  </select>
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Designation</label>
-                <input
-                  type="text"
-                  value={form.designation}
-                  onChange={e => setForm({ ...form, designation: e.target.value })}
-                  className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
-                  placeholder="e.g. Club Moderator"
-                />
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Access Level</label>
+                <select
+                  value={form.accessLevel}
+                  onChange={e => setForm({ ...form, accessLevel: e.target.value as any })}
+                  className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white"
+                >
+                  <option value="Full Access">Full Access (Manage Everything)</option>
+                  <option value="Editor">Editor (Manage Content & Events)</option>
+                  <option value="Viewer">Viewer (Read Only)</option>
+                </select>
               </div>
 
               <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">

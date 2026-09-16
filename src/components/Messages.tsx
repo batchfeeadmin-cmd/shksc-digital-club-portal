@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Quote, X, ZoomIn } from 'lucide-react';
 import { Reveal } from './ui/Reveal';
+import { getCMSData, AuthorityMessage } from '../services/cms/cmsService';
 
 export function Messages() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [messages, setMessages] = useState<AuthorityMessage[]>([]);
+
+  useEffect(() => {
+    const fetchMessages = () => {
+      setMessages(getCMSData().messages);
+    };
+    
+    fetchMessages();
+    window.addEventListener('shksc_state_update', fetchMessages);
+    return () => window.removeEventListener('shksc_state_update', fetchMessages);
+  }, []);
 
   return (
     <section className="py-20 bg-white relative overflow-hidden">
@@ -22,75 +34,41 @@ export function Messages() {
 
         <div className="grid lg:grid-cols-2 gap-10">
           
-          {/* Chairman Message */}
-          <Reveal delay={100}>
-            <div className="group shine bg-gradient-to-br from-white to-surface-sec rounded-3xl p-8 md:p-10 border border-primary-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 relative h-full flex flex-col">
-              <Quote className="absolute top-8 right-8 w-14 h-14 text-primary-50 opacity-60 group-hover:text-primary-100 group-hover:scale-110 transition-all duration-500" fill="currentColor" />
-              
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 relative z-10">
-                <div 
-                  className="w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-[1.4rem] p-1.5 bg-white shadow-xl moving-border cursor-pointer group/img relative"
-                  onClick={() => setSelectedImage('/chairman.png')}
-                >
-                  <div className="w-full h-full rounded-2xl overflow-hidden relative">
-                    <img 
-                      src="/chairman.png" 
-                      alt="Chairman" 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-primary-900/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                      <ZoomIn className="text-white w-8 h-8" />
+          {messages.map((msg, index) => (
+            <Reveal key={msg.id} delay={(index + 1) * 100}>
+              <div className="group shine bg-gradient-to-br from-white to-surface-sec rounded-3xl p-8 md:p-10 border border-primary-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 relative h-full flex flex-col">
+                <Quote className="absolute top-8 right-8 w-14 h-14 text-primary-50 opacity-60 group-hover:text-primary-100 group-hover:scale-110 transition-all duration-500" fill="currentColor" />
+                
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 relative z-10">
+                  <div 
+                    className="w-40 h-40 md:w-48 md:h-48 shrink-0 rounded-[1.4rem] p-1.5 bg-white shadow-xl moving-border cursor-pointer group/img relative"
+                    onClick={() => setSelectedImage(msg.image)}
+                  >
+                    <div className="w-full h-full rounded-2xl overflow-hidden relative">
+                      <img 
+                        src={msg.image} 
+                        alt={msg.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-primary-900/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                        <ZoomIn className="text-white w-8 h-8" />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="text-center sm:text-left pt-3">
-                  <h3 className="text-2xl font-heading font-extrabold text-primary-950 mb-1.5">Honorable Chairman</h3>
-                  <p className="text-xs font-bold text-accent-600 mb-2 uppercase tracking-[0.2em]">SHKSC Governing Body</p>
-                </div>
-              </div>
-              
-              <div className="flex-1 relative z-10">
-                <p className="text-gray-600 leading-loose italic text-[1.1rem] font-medium">
-                  "Education is not just about academic excellence, but also about building character, creativity, and leadership. Our digital club portal is a stepping stone for students to explore their hidden talents and prepare for a brilliant future. I strongly encourage every student to participate actively."
-                </p>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Principal Message */}
-          <Reveal delay={200}>
-            <div className="group shine bg-gradient-to-br from-white to-surface-sec rounded-3xl p-8 md:p-10 border border-primary-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 relative h-full flex flex-col">
-              <Quote className="absolute top-8 right-8 w-14 h-14 text-primary-50 opacity-60 group-hover:text-primary-100 group-hover:scale-110 transition-all duration-500" fill="currentColor" />
-              
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 relative z-10">
-                <div 
-                  className="w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-[1.4rem] p-1.5 bg-white shadow-xl moving-border cursor-pointer group/img relative"
-                  onClick={() => setSelectedImage('/principle.png')}
-                >
-                  <div className="w-full h-full rounded-2xl overflow-hidden relative">
-                    <img 
-                      src="/principle.png" 
-                      alt="Principal" 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-primary-900/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                      <ZoomIn className="text-white w-8 h-8" />
-                    </div>
+                  <div className="text-center sm:text-left pt-3">
+                    <h3 className="text-2xl font-heading font-extrabold text-primary-950 mb-1.5">{msg.name}</h3>
+                    <p className="text-xs font-bold text-accent-600 mb-2 uppercase tracking-[0.2em]">{msg.title}</p>
                   </div>
                 </div>
-                <div className="text-center sm:text-left pt-3">
-                  <h3 className="text-2xl font-heading font-extrabold text-primary-950 mb-1.5">Respected Principal</h3>
-                  <p className="text-xs font-bold text-accent-600 mb-2 uppercase tracking-[0.2em]">Shaheed Police Smrity College</p>
+                
+                <div className="flex-1 relative z-10">
+                  <p className="text-gray-600 leading-loose italic text-[1.1rem] font-medium">
+                    "{msg.quote}"
+                  </p>
                 </div>
               </div>
-              
-              <div className="flex-1 relative z-10">
-                <p className="text-gray-600 leading-loose italic text-[1.1rem] font-medium">
-                  "The diverse clubs at SHKSC offer a fantastic platform for students to grow beyond the classroom. By engaging in these extracurricular activities, students build teamwork, discipline, and lifelong skills. We are proud to launch this digital portal to make club activities more accessible."
-                </p>
-              </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          ))}
 
         </div>
       </div>

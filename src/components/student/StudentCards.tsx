@@ -2,10 +2,14 @@ import React from 'react';
 import { User as UserIcon, Receipt, Download, Bell } from 'lucide-react';
 import { Button } from '../ui/button';
 
-export const ProfileCard: React.FC<{ name: string, studentId: string }> = ({ name, studentId }) => (
+export const ProfileCard: React.FC<{ name: string, studentId: string, profilePicture?: string }> = ({ name, studentId, profilePicture }) => (
   <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-5">
-    <div className="w-16 h-16 rounded-full bg-primary-100 text-primary-900 flex items-center justify-center shrink-0">
-      <UserIcon size={32} />
+    <div className="w-16 h-16 rounded-full bg-primary-100 text-primary-900 flex items-center justify-center shrink-0 relative overflow-hidden border-2 border-primary-100 shadow-sm">
+      {profilePicture ? (
+        <img src={profilePicture} alt={name} className="w-full h-full object-cover" />
+      ) : (
+        <UserIcon size={32} />
+      )}
     </div>
     <div>
       <h2 className="text-2xl font-heading font-bold text-primary-950">{name}</h2>

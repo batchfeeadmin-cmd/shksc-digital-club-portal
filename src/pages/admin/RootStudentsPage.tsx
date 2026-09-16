@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable } from '../../components/admin/DataTable';
-import { Users } from 'lucide-react';
+import { Users, Download } from 'lucide-react';
 import { useClubsData } from '../../hooks/useAdminData';
 import { getStudents } from '../../services/students/studentService';
 import type { Student } from '../../types';
+import { Button } from '../../components/ui/button';
+import { exportToCSV } from '../../utils/exportUtils';
 
 export function RootStudentsPage() {
   const { clubs } = useClubsData();
@@ -54,8 +56,14 @@ export function RootStudentsPage() {
           <h2 className="text-2xl font-heading font-bold text-primary-950 mb-1">Students</h2>
           <p className="text-sm text-gray-500">All registered students across every club.</p>
         </div>
-        <div className="bg-primary-50 text-primary-700 px-4 py-2 rounded-xl flex items-center gap-2 border border-primary-100 font-medium">
-          <Users size={18} /> {students.length} Students
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => exportToCSV('all_students.csv', rows)}>
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+          <div className="bg-primary-50 text-primary-700 px-4 py-2 rounded-xl flex items-center gap-2 border border-primary-100 font-medium">
+            <Users size={18} /> {students.length} Students
+          </div>
         </div>
       </div>
 

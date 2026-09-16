@@ -14,6 +14,16 @@ const seedUsers: UserAccount[] = [
     createdAt: new Date().toISOString()
   },
   {
+    id: 'u-accountant',
+    name: 'College Accountant',
+    email: 'accountant@shksc.edu',
+    password: 'accountant123',
+    role: 'sub_admin',
+    designation: 'Accountant',
+    permissions: ['payments', 'reports', 'data'],
+    createdAt: new Date().toISOString()
+  },
+  {
     id: 'u-science',
     name: 'Science Club Admin',
     email: 'science@shksc.edu',

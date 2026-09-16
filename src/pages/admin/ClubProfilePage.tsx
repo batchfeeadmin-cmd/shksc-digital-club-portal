@@ -16,6 +16,7 @@ export function ClubProfilePage() {
   const [email, setEmail] = useState(account?.email || '');
   const [mobile, setMobile] = useState(account?.mobile || '');
   const [designation, setDesignation] = useState(account?.designation || '');
+  const [profilePicture, setProfilePicture] = useState(account?.profilePicture || '');
   const [submitted, setSubmitted] = useState(false);
 
   const pendingRequest = user
@@ -26,7 +27,8 @@ export function ClubProfilePage() {
 
   const dirty =
     name !== account?.name || email !== account?.email ||
-    mobile !== (account?.mobile || '') || designation !== (account?.designation || '');
+    mobile !== (account?.mobile || '') || designation !== (account?.designation || '') ||
+    profilePicture !== (account?.profilePicture || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +45,8 @@ export function ClubProfilePage() {
         name,
         email,
         mobile,
-        designation
+        designation,
+        profilePicture
       }
     });
     setSubmitted(true);
@@ -84,8 +87,12 @@ export function ClubProfilePage() {
         {/* Profile summary card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 rounded-full bg-primary-950 text-white flex items-center justify-center font-heading font-bold text-2xl shrink-0">
-              {(account?.name || 'A').charAt(0)}
+            <div className="w-16 h-16 rounded-full bg-primary-950 text-white flex items-center justify-center font-heading font-bold text-2xl shrink-0 relative overflow-hidden border-2 border-primary-100">
+              {account?.profilePicture ? (
+                <img src={account.profilePicture} alt={account.name} className="w-full h-full object-cover" />
+              ) : (
+                (account?.name || 'A').charAt(0)
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-xl font-heading font-bold text-primary-950">{account?.name}</h3>
@@ -156,6 +163,16 @@ export function ClubProfilePage() {
                   onChange={e => setDesignation(e.target.value)}
                   className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
                   placeholder="e.g. Club Moderator"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Profile Picture URL</label>
+                <input
+                  type="text"
+                  value={profilePicture}
+                  onChange={e => setProfilePicture(e.target.value)}
+                  className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+                  placeholder="https://example.com/photo.jpg"
                 />
               </div>
             </div>

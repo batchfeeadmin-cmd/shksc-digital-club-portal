@@ -31,10 +31,20 @@
   --animate-float-delayed: float 9s ease-in-out 1.2s infinite;
   --animate-gradient-x: gradient-x 8s ease infinite;
   --animate-spin-slow: spin-slow 28s linear infinite;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-ring: ring 2s ease-in-out infinite;
 
   @keyframes spin-slow {
     to { transform: rotate(360deg); }
   }
+  
+  @keyframes ring {
+    0%, 100% { transform: rotate(0deg); }
+    10%, 30%, 50%, 70%, 90% { transform: rotate(10deg); }
+    20%, 40%, 60%, 80% { transform: rotate(-10deg); }
+  }
+  
+
 }
 
 @property --angle {
@@ -68,6 +78,7 @@
 }
 
 @keyframes marquee {
+  from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 
@@ -244,7 +255,7 @@
     background: white !important;
   }
 
-  body * {
+  body:has(#shksc-receipt-print) * {
     visibility: hidden !important;
   }
 
@@ -254,7 +265,7 @@
   }
 
   /* Collapse the height of all unrelated elements to remove blank pages */
-  body *:not(#shksc-receipt-print):not(#shksc-receipt-print *) {
+  body:has(#shksc-receipt-print) *:not(#shksc-receipt-print):not(#shksc-receipt-print *) {
     position: static !important;
     height: 0 !important;
     min-height: 0 !important;

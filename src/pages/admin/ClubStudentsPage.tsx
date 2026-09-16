@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ClubAdminLayout } from '../../components/admin/ClubAdminLayout';
 import { DataTable } from '../../components/admin/DataTable';
 import { Button } from '../../components/ui/button';
-import { Users, Pencil, UserPlus, X, CheckCircle2 } from 'lucide-react';
+import { Users, Pencil, UserPlus, X, CheckCircle2, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useClubsData, useClubFees } from '../../hooks/useAdminData';
 import { getStudents, addStudent, updateStudent } from '../../services/students/studentService';
@@ -10,6 +10,7 @@ import { confirmPayment } from '../../services/payments/paymentService';
 import { generateTranId } from '../../services/payments/sslCommerzService';
 import { logActivity } from '../../services/activity/activityService';
 import type { Student } from '../../types';
+import { exportToCSV } from '../../utils/exportUtils';
 
 interface EditForm {
   name: string;
@@ -201,6 +202,10 @@ export function ClubStudentsPage() {
           <p className="text-sm text-gray-500">{club?.name || 'Your club'} — view, edit or admit students.</p>
         </div>
         <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => exportToCSV('club_students.csv', rows.map(({_student, ...rest}) => rest))}>
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
           <div className="bg-primary-50 text-primary-700 px-4 py-2 rounded-xl flex items-center gap-2 border border-primary-100 font-medium">
             <Users size={18} /> {clubStudents.length} Students
           </div>

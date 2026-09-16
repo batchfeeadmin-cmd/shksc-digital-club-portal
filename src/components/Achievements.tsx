@@ -32,12 +32,12 @@ export function Achievements() {
           {achievementsData.map((achievement, i) => (
             <Reveal key={achievement.id} delay={i * 120} className="h-full">
               <div className="group shine bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary-900/10 hover:-translate-y-1.5 transition-all duration-300 border border-gray-100 h-full flex flex-col">
-                <div className="aspect-[4/3] relative overflow-hidden">
+                <div className="aspect-[4/3] relative overflow-hidden bg-slate-50">
                   {achievement.image ? (
                     <img 
                       src={achievement.image} 
                       alt={achievement.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                     />
                   ) : (
                     <div className="w-full h-full bg-primary-800 flex items-center justify-center">

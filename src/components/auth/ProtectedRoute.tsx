@@ -15,8 +15,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) 
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // If user's role is not allowed on this route, redirect them to their dashboard
-    if (user.role === 'root_admin') return <Navigate to="/admin/root/dashboard" replace />;
+    // If it's a sub_admin trying to access root_admin, and root_admin is allowed, let them pass if they have permission
+    // Wait, since we are doing permission check in the sidebar and components, allowing sub_admin to access root_admin routes is fine.
+    // We just need to check if the role is allowed.
+    if (allowedRoles.includes('root_admin') && user.role === 'sub_admin') {
+      return <Outlet />;
+    }
+
+    // Otherwise redirect them to their dashboard
+    if (user.role === 'root_admin' || user.role === 'sub_admin') return <Navigate to="/admin/root/dashboard" replace />;
     if (user.role === 'club_admin') return <Navigate to="/admin/club/dashboard" replace />;
     if (user.role === 'student') return <Navigate to="/student/dashboard" replace />;
     return <Navigate to="/" replace />;
@@ -27,6 +34,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) 
 
 export const RoleGuard: React.FC<{ allowedRoles: Role[], children: React.ReactNode }> = ({ allowedRoles, children }) => {
   const { user } = useAuth();
-  if (!user || !allowedRoles.includes(user.role)) return null;
+  if (!user) return null;
+  if (allowedRoles.includes('root_admin') && user.role === 'sub_admin') return <>{children}</>;
+  if (!allowedRoles.includes(user.role)) return null;
   return <>{children}</>;
 };

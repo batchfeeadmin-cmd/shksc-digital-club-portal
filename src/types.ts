@@ -1,4 +1,4 @@
-export type Role = 'root_admin' | 'club_admin' | 'student';
+export type Role = 'root_admin' | 'sub_admin' | 'club_admin' | 'student';
 
 export interface User {
   id: string;
@@ -7,12 +7,18 @@ export interface User {
   role: Role;
   clubId?: string;
   className?: string;
+  profilePicture?: string;
+  permissions?: string[];
 }
 
 export interface UserAccount extends User {
   password: string;
   mobile?: string;
   designation?: string;
+  userType?: 'Teacher' | 'Student' | 'Other';
+  accessLevel?: 'Full Access' | 'Editor' | 'Viewer';
+  department?: string;
+  status?: 'Active' | 'Inactive';
   createdAt?: string;
 }
 

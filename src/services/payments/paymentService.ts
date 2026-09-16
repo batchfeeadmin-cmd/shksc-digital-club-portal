@@ -6,7 +6,7 @@ import { updateStudent } from '../students/studentService';
 
 const FEES_STORAGE_KEY = 'shksc_club_fees';
 const FEES_VERSION = 2;
-const PAYMENTS_STORAGE_KEY = 'shksc_payments_v2';
+const PAYMENTS_STORAGE_KEY = 'shksc_payments_v3';
 
 // Default fee structure (BDT)
 export const DEFAULT_REGISTRATION_FEE = 100;
@@ -108,37 +108,97 @@ const initialPayments: Payment[] = [
     id: 'pay-1',
     studentId: 'SHKSC-REG-2026-001',
     clubId: 'c3',
-    studentName: 'Md. Shafiqul Islam',
+    studentName: 'Arafat Rahman',
     clubName: 'SHKSC Science Club',
     amount: 2100,
     status: 'Paid',
-    transactionId: 'TXN-987654321',
-    method: 'SSLCommerz (Sandbox)',
-    date: new Date(Date.now() - 86400000 * 2).toISOString()
+    transactionId: 'TXN-SHKSC-001',
+    method: 'SSLCommerz',
+    date: new Date(Date.now() - 86400000 * 1).toISOString()
   },
   {
     id: 'pay-2',
     studentId: 'SHKSC-REG-2026-002',
     clubId: 'c1',
-    studentName: 'Sadia Rahman',
+    studentName: 'Nusrat Jahan Faria',
     clubName: 'SHKSC Cultural Club',
     amount: 2100,
     status: 'Paid',
-    transactionId: 'TXN-987654322',
+    transactionId: 'TXN-SHKSC-002',
     method: 'Cash',
-    date: new Date(Date.now() - 86400000 * 5).toISOString()
+    date: new Date(Date.now() - 86400000 * 2).toISOString()
   },
   {
     id: 'pay-3',
     studentId: 'SHKSC-REG-2026-003',
     clubId: 'c2',
-    studentName: 'Tahmid Hasan',
+    studentName: 'Tahmid Hasan Siam',
     clubName: 'SHKSC Debate Club',
     amount: 2100,
     status: 'Paid',
-    transactionId: 'TXN-987654323',
-    method: 'SSLCommerz (Sandbox)',
+    transactionId: 'TXN-SHKSC-003',
+    method: 'SSLCommerz',
+    date: new Date(Date.now() - 86400000 * 3).toISOString()
+  },
+  {
+    id: 'pay-4',
+    studentId: 'SHKSC-REG-2026-004',
+    clubId: 'c4',
+    studentName: 'Sumaiya Akhter',
+    clubName: 'SHKSC English Club',
+    amount: 2100,
+    status: 'Paid',
+    transactionId: 'TXN-SHKSC-004',
+    method: 'SSLCommerz',
+    date: new Date(Date.now() - 86400000 * 4).toISOString()
+  },
+  {
+    id: 'pay-5',
+    studentId: 'SHKSC-REG-2026-005',
+    clubId: 'c5',
+    studentName: 'Tanvir Ahmed Joy',
+    clubName: 'SHKSC IT Club',
+    amount: 2100,
+    status: 'Paid',
+    transactionId: 'TXN-SHKSC-005',
+    method: 'Cash',
+    date: new Date(Date.now() - 86400000 * 5).toISOString()
+  },
+  {
+    id: 'pay-7',
+    studentId: 'SHKSC-REG-2026-007',
+    clubId: 'c6',
+    studentName: 'Jannatul Ferdous',
+    clubName: 'SHKSC Photography Club',
+    amount: 2100,
+    status: 'Paid',
+    transactionId: 'TXN-SHKSC-007',
+    method: 'SSLCommerz',
+    date: new Date(Date.now() - 86400000 * 6).toISOString()
+  },
+  {
+    id: 'pay-8',
+    studentId: 'SHKSC-REG-2026-008',
+    clubId: 'c1',
+    studentName: 'Rakibul Islam',
+    clubName: 'SHKSC Cultural Club',
+    amount: 2100,
+    status: 'Paid',
+    transactionId: 'TXN-SHKSC-008',
+    method: 'SSLCommerz',
     date: new Date(Date.now() - 86400000 * 7).toISOString()
+  },
+  {
+    id: 'pay-9',
+    studentId: 'SHKSC-REG-2026-009',
+    clubId: 'c7',
+    studentName: 'Farzana Yesmin',
+    clubName: 'SHKSC Sports Club',
+    amount: 2100,
+    status: 'Paid',
+    transactionId: 'TXN-SHKSC-009',
+    method: 'Cash',
+    date: new Date(Date.now() - 86400000 * 8).toISOString()
   }
 ];
 
@@ -199,4 +259,8 @@ export const confirmPayment = (
   });
 
   return payment;
+};
+
+export const clearAllPayments = (): void => {
+  savePayments([]);
 };

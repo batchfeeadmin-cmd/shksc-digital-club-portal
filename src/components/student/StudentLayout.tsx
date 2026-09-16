@@ -24,8 +24,12 @@ export const StudentLayout = ({ children }: { children: React.ReactNode }) => {
             <span className="font-bold text-primary-950">Student Portal</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary-50 text-primary-900 flex items-center justify-center font-bold">
-              {user?.name?.charAt(0) || <User size={16} />}
+            <div className="w-8 h-8 rounded-full bg-primary-50 text-primary-900 flex items-center justify-center font-bold overflow-hidden border border-primary-100">
+              {user?.profilePicture ? (
+                <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.charAt(0) || <User size={16} />
+              )}
             </div>
           </div>
         </header>
@@ -43,8 +47,12 @@ export const StudentLayout = ({ children }: { children: React.ReactNode }) => {
                 <p className="text-sm font-bold text-gray-900">{user?.name || 'Student'}</p>
                 <p className="text-xs text-gray-500">Class {user?.className || '10'}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-900 flex items-center justify-center font-bold">
-                {user?.name?.charAt(0) || <User size={20} />}
+              <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-900 flex items-center justify-center font-bold overflow-hidden border border-primary-200">
+                {user?.profilePicture ? (
+                  <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
+                ) : (
+                  user?.name?.charAt(0) || <User size={20} />
+                )}
               </div>
             </div>
           </div>

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { ImageCropper } from '../ui/ImageCropper';
+import { getMasterStudents, findMasterStudent } from '../../services/students/masterStudentService';
+import { AlertCircle } from 'lucide-react';
 
 interface PersonalInfoFormProps {
   formData: any;
@@ -9,8 +11,11 @@ interface PersonalInfoFormProps {
 }
 
 export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoFormProps) {
+  const [error, setError] = useState<string | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     updateData({ [e.target.name]: e.target.value });
+    if (error) setError(null);
   };
 
   const handleImageChange = (base64: string) => {
@@ -19,6 +24,25 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation against Master Database
+    const masterDB = getMasterStudents();
+    if (masterDB.length > 0) {
+      const match = findMasterStudent(formData.studentId);
+      if (!match) {
+        setError(`Student ID "${formData.studentId}" was not found in the official school database. Please contact administration.`);
+        return;
+      }
+      
+      // Auto-fill matched details
+      updateData({
+        fullName: match.name,
+        class: match.class,
+        rollNumber: match.roll || formData.rollNumber,
+        section: match.section || formData.section
+      });
+    }
+
     onNext();
   };
 
@@ -26,6 +50,13 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
       <h3 className="text-xl font-heading font-bold text-primary-950 mb-6 pb-4 border-b border-gray-100">Student Information</h3>
       
+      {error && (
+        <div className="bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl flex items-start gap-3 mb-6">
+          <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
+
       <div className="mb-8 border-b border-gray-100 pb-8">
         <label className="block text-sm font-semibold text-gray-700 mb-4 text-center">Profile Picture (Passport Size)</label>
         <ImageCropper 

@@ -20,11 +20,11 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
   const links = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/student/dashboard' },
     { name: 'My Profile', icon: <User size={20} />, path: '/student/profile' },
-    { name: 'My Club', icon: <BookOpen size={20} />, path: '#' },
-    { name: 'Registration', icon: <ClipboardList size={20} />, path: '#' },
-    { name: 'Payment', icon: <CreditCard size={20} />, path: '#' },
-    { name: 'Receipt', icon: <ReceiptText size={20} />, path: '#' },
-    { name: 'Notices', icon: <Bell size={20} />, path: '#' },
+    { name: 'My Club', icon: <BookOpen size={20} />, path: '/student/club' },
+    { name: 'Registration', icon: <ClipboardList size={20} />, path: '/student/registration' },
+    { name: 'Payment', icon: <CreditCard size={20} />, path: '/student/payment' },
+    { name: 'Receipt', icon: <ReceiptText size={20} />, path: '/student/receipt' },
+    { name: 'Notices', icon: <Bell size={20} />, path: '/student/notices' },
   ];
 
   return (

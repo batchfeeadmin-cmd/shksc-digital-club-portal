@@ -11,7 +11,10 @@ import {
   CircleDollarSign, 
   CreditCard, 
   UserCircle, 
-  LogOut 
+  LogOut,
+  Calendar,
+  Shield,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -28,7 +31,11 @@ export function ClubSidebar() {
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/admin/club/dashboard' },
     { name: 'Club Information', icon: <Info size={20} />, path: '/admin/club/information' },
     { name: 'Students', icon: <Users size={20} />, path: '/admin/club/students' },
+    { name: 'Committee', icon: <Shield size={20} />, path: '/admin/club/committee' },
+    { name: 'Certificates', icon: <Award size={20} />, path: '/admin/club/certificates' },
     { name: 'Achievements', icon: <Award size={20} />, path: '/admin/club/achievements' },
+    { name: 'Events', icon: <Calendar size={20} />, path: '/admin/club/events' },
+    { name: 'Communications', icon: <Mail size={20} />, path: '/admin/club/communications' },
     { name: 'Gallery', icon: <ImageIcon size={20} />, path: '/admin/club/gallery' },
     { name: 'Notices', icon: <Bell size={20} />, path: '/admin/club/notices' },
     { name: 'Fees', icon: <CircleDollarSign size={20} />, path: '/admin/club/fees' },

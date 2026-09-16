@@ -8,8 +8,11 @@ import { About } from '../components/About';
 import { ClubShowcase } from '../components/ClubShowcase';
 import { Achievements } from '../components/Achievements';
 import { Benefits } from '../components/Benefits';
-import { RegistrationProcess } from '../components/RegistrationProcess';
+import { HomeTestimonials } from '../components/HomeTestimonials';
+import { HomeFAQ } from '../components/HomeFAQ';
+import { HomeSocial } from '../components/HomeSocial';
 import { CTASection } from '../components/CTASection';
+import { HomeNotices } from '../components/HomeNotices';
 
 export function HomePage() {
   return (
@@ -19,11 +22,14 @@ export function HomePage() {
       <ClubMarquee />
       <Messages />
       <Stats />
+      <HomeNotices />
       <About />
       <ClubShowcase />
       <Achievements />
       <Benefits />
-      <RegistrationProcess />
+      <HomeTestimonials />
+      <HomeFAQ />
+      <HomeSocial />
       <CTASection />
     </>
   );

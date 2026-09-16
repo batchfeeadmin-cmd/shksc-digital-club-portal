@@ -45,8 +45,12 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick, title = 'Dash
 
         {/* Profile */}
         <button className="flex items-center gap-2 p-1 hover:bg-slate-50 rounded-full transition-colors pr-3 border border-transparent hover:border-gray-200">
-          <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center shrink-0 font-bold">
-            {user?.name?.charAt(0) || <UserCircle size={20} />}
+          <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center shrink-0 font-bold overflow-hidden border border-primary-200">
+            {user?.profilePicture ? (
+              <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
+            ) : (
+              user?.name?.charAt(0) || <UserCircle size={20} />
+            )}
           </div>
           <span className="text-sm font-semibold text-gray-700 hidden sm:block">{user?.name || 'Admin'}</span>
         </button>

@@ -13,24 +13,24 @@ export const achievementsData: Achievement[] = [
     title: 'World Robot Olympiad 2025',
     competition: '“Future Innovators” category — Manila, Philippines',
     position: 'Global Stage Qualifier',
-    image: '/assets/science-club/award-stage.jpg'
+    image: '/assets/science-club award-group.jpg'
   },
   {
-    id: 'a2',
-    year: 2025,
-    clubName: 'SHKSC Computer Club',
-    title: 'Youth Coding Olympiad',
-    competition: 'Regional Tech Championship',
-    position: 'Gold Medalist',
-    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=60'
+    id: 'a4',
+    year: 2024,
+    clubName: 'SHKSC Scout Group',
+    title: 'National Scouting Award',
+    competition: 'Annual Scout Jamboree',
+    position: 'Best Scout Unit',
+    image: '/assets/scout-group award-ceremony.jpg'
   },
   {
-    id: 'a3',
-    year: 2025,
-    clubName: 'SHKSC English Language Club',
-    title: 'Interschool Debate Tournament',
-    competition: 'National Debate League',
-    position: '1st Runner Up',
-    image: 'https://images.unsplash.com/photo-1475721025870-2440125b01ce?w=800&auto=format&fit=crop&q=60'
+    id: 'a5',
+    year: 2024,
+    clubName: 'SHKSC Scout Group',
+    title: 'National Museum Visit',
+    competition: 'Educational Tour',
+    position: 'Participant',
+    image: '/assets/scout-group museum-visit.jpg'
   }
 ];

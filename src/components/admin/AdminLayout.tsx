@@ -7,11 +7,15 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <div className="print:hidden">
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      </div>
       
       <div className="flex-1 flex flex-col min-w-0">
-        <TopHeader onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+        <div className="print:hidden">
+          <TopHeader onMenuClick={() => setIsSidebarOpen(true)} />
+        </div>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto print:p-0 print:overflow-visible">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

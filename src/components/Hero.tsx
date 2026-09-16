@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
 import { useRegistrationState } from '../hooks/useAdminData';
 import { Reveal } from './ui/Reveal';
-
-const heroWords = ['Discover', 'Your', 'Passion.'];
+import { getCMSData, CMSData } from '../services/cms/cmsService';
 
 export function Hero() {
   const { state: regState } = useRegistrationState();
   const registrationOpen = regState.isOpen;
+  const [cmsData, setCmsData] = useState<CMSData | null>(null);
+
+  useEffect(() => {
+    const fetchHeroData = () => {
+      setCmsData(getCMSData());
+    };
+    
+    fetchHeroData();
+    window.addEventListener('shksc_state_update', fetchHeroData);
+    return () => window.removeEventListener('shksc_state_update', fetchHeroData);
+  }, []);
 
   return (
     <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -34,19 +44,15 @@ export function Hero() {
             )}
             
             <h1 className="text-5xl lg:text-6xl font-heading font-extrabold text-primary-950 leading-[1.1] mb-6">
-              {heroWords.map((word, i) => (
-                <span key={word} className="hero-word" style={{ animationDelay: `${i * 90 + 120}ms` }}>
+              {cmsData?.hero.headline.split(' ').map((word, i) => (
+                <span key={i} className="hero-word" style={{ animationDelay: `${i * 90 + 120}ms` }}>
                   {word}{' '}
                 </span>
               ))}
-              <br />
-              <span className="hero-word" style={{ animationDelay: '420ms' }}>
-                <span className="text-gradient">Build Your Future.</span>
-              </span>
             </h1>
             
             <p className="hero-word text-lg text-gray-600 mb-8 leading-relaxed max-w-xl" style={{ animationDelay: '540ms' }}>
-              Explore SHKSC student clubs, discover your interests, develop your skills and become part of a vibrant student community.
+              {cmsData?.hero.subHeadline}
             </p>
             
             <div className="hero-word flex flex-col sm:flex-row gap-4" style={{ animationDelay: '660ms' }}>

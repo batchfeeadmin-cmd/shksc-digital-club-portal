@@ -185,7 +185,7 @@ export function AdminDashboardPage() {
             </div>
 
             {/* Pending Approvals */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col w-full">
               <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="text-lg font-heading font-bold text-primary-950 flex items-center gap-2">
                   Pending Approvals

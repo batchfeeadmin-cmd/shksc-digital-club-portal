@@ -1,17 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StudentLayout } from '../../components/student/StudentLayout';
-import { User, Mail, Phone, BookOpen, Hash, GraduationCap } from 'lucide-react';
+import { User, Mail, Phone, BookOpen, Hash, GraduationCap, Camera } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { getStudentByEmail, updateStudent } from '../../services/students/studentService';
+import { getClubs } from '../../services/clubs/clubService';
 
 export function StudentProfilePage() {
-  // Mock Student Data
+  const { user } = useAuth();
+  
+  // Real student data
+  const realStudent = user?.email ? getStudentByEmail(user.email) : null;
+  const clubName = realStudent 
+    ? getClubs().find(c => c.id === realStudent.clubId)?.name 
+    : 'Not Assigned';
+
   const student = {
-    name: 'Rahim Ahmed',
-    id: 'SHKSC-REG-2026-001',
-    class: '10',
-    roll: '15',
-    mobile: '01711-000000',
-    email: 'rahim@example.com',
-    clubName: 'Science Club'
+    name: realStudent?.name || user?.name || 'Unknown',
+    id: realStudent?.studentId || 'N/A',
+    class: realStudent?.class || user?.className || 'N/A',
+    roll: realStudent?.roll || 'N/A',
+    mobile: realStudent?.mobile || 'N/A',
+    email: realStudent?.email || user?.email || 'N/A',
+    clubName: clubName || 'N/A',
+    profilePicture: realStudent?.profilePicture || user?.profilePicture
+  };
+
+  const handleUpdatePicture = () => {
+    if (!realStudent) return;
+    const url = window.prompt('Enter Profile Picture URL:', realStudent.profilePicture || '');
+    if (url !== null) {
+      updateStudent(realStudent.id, { profilePicture: url });
+      // In a real app we'd also update the AuthContext user if needed, 
+      // but for this mock, state update event will re-render the layout.
+    }
   };
 
   return (
@@ -23,8 +44,18 @@ export function StudentProfilePage() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10 max-w-3xl">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-10 pb-10 border-b border-gray-100 text-center sm:text-left">
-           <div className="w-24 h-24 rounded-full bg-primary-100 text-primary-900 flex items-center justify-center shrink-0">
-             <User size={40} />
+           <div className="w-24 h-24 rounded-full bg-primary-100 text-primary-900 flex items-center justify-center shrink-0 relative overflow-hidden border-2 border-primary-100 shadow-sm group">
+             {student.profilePicture ? (
+                <img src={student.profilePicture} alt={student.name} className="w-full h-full object-cover" />
+             ) : (
+                <User size={40} />
+             )}
+             <button 
+               onClick={handleUpdatePicture}
+               className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white"
+             >
+               <Camera size={24} />
+             </button>
            </div>
            <div className="pt-2">
              <h2 className="text-3xl font-heading font-bold text-primary-950">{student.name}</h2>

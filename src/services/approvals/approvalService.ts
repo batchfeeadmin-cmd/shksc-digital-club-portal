@@ -130,7 +130,8 @@ export const approveRequest = (request: ApprovalRequest): void => {
           name: request.data.name,
           email: request.data.email,
           mobile: request.data.mobile,
-          designation: request.data.designation
+          designation: request.data.designation,
+          profilePicture: request.data.profilePicture
         });
       }
       break;
