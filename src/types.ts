@@ -25,11 +25,18 @@ export interface UserAccount extends User {
 export interface Student {
   id: string; // Document ID
   studentId: string; // e.g. SHKSC-REG-2026-001
+  schoolStudentId?: string; // Official school-issued ID
   name: string;
+  fatherName?: string;
+  motherName?: string;
+  dateOfBirth?: string;
+  gender?: string;
   class: string;
+  section?: string;
   roll: string;
   mobile: string;
   email: string;
+  address?: string;
   clubId: string;
   registrationStatus: 'Confirmed' | 'Pending Payment';
   receiptTxnId?: string;
@@ -126,6 +133,73 @@ export interface ApprovalRequest {
   status: 'Pending' | 'Approved' | 'Rejected';
   requestDate: string;
   data: any;
+}
+
+export type FinanceRequestKind = 'Honorarium' | 'Club Expense';
+export type FinanceRequestStatus = 'Pending' | 'Approved' | 'Rejected' | 'Proof Submitted' | 'Closed';
+
+export interface FinanceLineItem {
+  id: string;
+  recipientName: string;
+  designation: string;
+  description: string;
+  amount: number;
+}
+
+export interface FinanceRequest {
+  id: string;
+  clubId: string;
+  clubName: string;
+  kind: FinanceRequestKind;
+  period: string;
+  title: string;
+  notes?: string;
+  items: FinanceLineItem[];
+  totalAmount: number;
+  status: FinanceRequestStatus;
+  requestedBy: string;
+  requestedAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  rejectionReason?: string;
+  voucherNo?: string;
+  proofVoucher?: string;
+  proofFileName?: string;
+  proofSubmittedAt?: string;
+}
+
+export type BatchStatus = 'Pending' | 'Approved' | 'Rejected';
+export type AttendanceStatus = 'Present' | 'Absent' | 'Late';
+
+export interface ClubBatch {
+  id: string;
+  clubId: string;
+  clubName: string;
+  name: string;
+  className: string;
+  section?: string;
+  days: string[];
+  startTime: string;
+  endTime: string;
+  instructorName: string;
+  instructorContact?: string;
+  studentIds: string[];
+  status: BatchStatus;
+  requestedBy: string;
+  requestedAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  rejectionReason?: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  batchId: string;
+  clubId: string;
+  date: string;
+  markedBy: string;
+  markedAt: string;
+  entries: Record<string, AttendanceStatus>;
 }
 
 export interface RegistrationState {

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { SectionHeading } from './ui/SectionHeading';
 import { Reveal } from './ui/Reveal';
-import { CalendarDays, Bell, ArrowRight } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { getCMSData, GlobalNotice } from '../services/cms/cmsService';
-import { Link } from 'react-router-dom';
 
 export function HomeNotices() {
   const [notices, setNotices] = useState<GlobalNotice[]>([]);
@@ -25,15 +24,12 @@ export function HomeNotices() {
   return (
     <section id="notices" className="py-20 bg-surface">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+        <div className="mb-12">
           <SectionHeading 
             eyebrow="Announcements"
             title="Notice Board & Updates"
             subtitle="Stay informed with the latest announcements and upcoming events."
           />
-          <Link to="/registration" className="hidden md:flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors mb-4">
-            View All Notices <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -59,22 +55,12 @@ export function HomeNotices() {
                   {notice.title}
                 </h3>
                 
-                <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-1">
+                <p className="text-gray-600 text-sm mb-1 flex-1">
                   {notice.content}
                 </p>
-                
-                <button className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-primary-600 transition-colors mt-auto w-fit">
-                  Read More <ArrowRight className="w-4 h-4" />
-                </button>
               </div>
             </Reveal>
           ))}
-        </div>
-        
-        <div className="mt-8 text-center md:hidden">
-          <Link to="/registration" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-800 transition-colors">
-            View All Notices <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
       </div>
     </section>

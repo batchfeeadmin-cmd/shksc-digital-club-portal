@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StudentSidebar } from './StudentSidebar';
-import { Menu, Bell, User } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const StudentLayout = ({ children }: { children: React.ReactNode }) => {
@@ -18,6 +18,7 @@ export const StudentLayout = ({ children }: { children: React.ReactNode }) => {
             <button 
               onClick={() => setSidebarOpen(true)}
               className="p-2 -ml-2 text-gray-600 hover:text-primary-950 rounded-lg hover:bg-gray-50 transition-colors"
+              aria-label="Open student navigation"
             >
               <Menu size={24} />
             </button>
@@ -38,10 +39,6 @@ export const StudentLayout = ({ children }: { children: React.ReactNode }) => {
         <header className="hidden lg:flex h-16 bg-white border-b border-gray-100 items-center justify-between px-8 sticky top-0 z-30">
           <h2 className="font-bold text-primary-950 text-lg">Welcome back!</h2>
           <div className="flex items-center gap-4">
-            <button className="w-10 h-10 rounded-full hover:bg-gray-50 flex items-center justify-center text-gray-500 relative transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-accent-500 rounded-full border-2 border-white"></span>
-            </button>
             <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
               <div className="text-right">
                 <p className="text-sm font-bold text-gray-900">{user?.name || 'Student'}</p>

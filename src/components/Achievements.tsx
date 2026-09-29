@@ -4,6 +4,7 @@ import { achievementsData } from '../data/mockData';
 import { Button } from './ui/button';
 import { Reveal } from './ui/Reveal';
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function Achievements() {
   return (
@@ -23,8 +24,10 @@ export function Achievements() {
               Proud Moments
             </h2>
           </div>
-          <Button variant="link" className="text-primary-600 self-start md:self-end group">
-            View All Achievements <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+          <Button asChild variant="link" className="text-primary-600 self-start md:self-end group">
+            <Link to="/clubs">
+              Explore Club Pages <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </Button>
         </Reveal>
 

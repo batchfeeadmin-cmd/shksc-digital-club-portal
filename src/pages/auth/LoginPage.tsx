@@ -18,7 +18,7 @@ export function LoginPage() {
   const clubAdminClubName = getClubs().find(c => c.id === clubAdminAccount?.clubId)?.name || 'Club';
 
   if (user) {
-    if (user.role === 'root_admin') return <Navigate to="/admin/root/dashboard" replace />;
+    if (user.role === 'root_admin' || user.role === 'sub_admin') return <Navigate to="/admin/root/dashboard" replace />;
     if (user.role === 'club_admin') return <Navigate to="/admin/club/dashboard" replace />;
     if (user.role === 'student') return <Navigate to="/student/dashboard" replace />;
   }

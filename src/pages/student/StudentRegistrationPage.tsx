@@ -48,8 +48,12 @@ export function StudentRegistrationPage() {
                     <dd className="mt-1 text-sm text-gray-900 font-medium">{student.name}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500">Student ID</dt>
+                    <dt className="text-sm font-medium text-gray-500">Registration Reference</dt>
                     <dd className="mt-1 text-sm text-gray-900 font-medium">{student.studentId}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">School Student ID</dt>
+                    <dd className="mt-1 text-sm text-gray-900 font-medium">{student.schoolStudentId || '—'}</dd>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Email Address</dt>
@@ -61,8 +65,41 @@ export function StudentRegistrationPage() {
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Class</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{student.class}</dd>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {student.class}{student.section ? `, Section ${student.section}` : ''}{student.roll ? `, Roll ${student.roll}` : ''}
+                    </dd>
                   </div>
+
+                  {student.fatherName && (
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Father's Name</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{student.fatherName}</dd>
+                    </div>
+                  )}
+                  {student.motherName && (
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Mother's Name</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{student.motherName}</dd>
+                    </div>
+                  )}
+                  {student.dateOfBirth && (
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Date of Birth</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{student.dateOfBirth}</dd>
+                    </div>
+                  )}
+                  {student.gender && (
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Gender</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{student.gender}</dd>
+                    </div>
+                  )}
+                  {student.address && (
+                    <div className="sm:col-span-2">
+                      <dt className="text-sm font-medium text-gray-500">Address</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{student.address}</dd>
+                    </div>
+                  )}
 
                   <div className="sm:col-span-2">
                     <dt className="text-sm font-medium text-gray-500">Selected Club</dt>
@@ -86,9 +123,9 @@ export function StudentRegistrationPage() {
             <p className="text-sm text-primary-700 mb-4">
               Once registration is submitted, you cannot change the details directly. Please contact your club admin to request updates.
             </p>
-            <button className="text-sm font-bold text-primary-700 bg-white px-4 py-2 rounded-lg border border-primary-200 hover:bg-primary-50 w-full transition-colors">
+            <a href="mailto:info.shksc@gmail.com?subject=Club%20registration%20update%20request" className="block text-center text-sm font-bold text-primary-700 bg-white px-4 py-2 rounded-lg border border-primary-200 hover:bg-primary-50 w-full transition-colors">
               Contact Admin
-            </button>
+            </a>
           </div>
         </div>
       </div>

@@ -260,7 +260,9 @@
   }
 
   #shksc-receipt-print,
-  #shksc-receipt-print * {
+  #shksc-receipt-print *,
+  body:has(#shksc-receipt-print) #shksc-receipt-print,
+  body:has(#shksc-receipt-print) #shksc-receipt-print * {
     visibility: visible !important;
   }
 

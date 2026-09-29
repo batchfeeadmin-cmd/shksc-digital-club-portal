@@ -1,41 +1,33 @@
 import React from 'react';
 import { SectionHeading } from './ui/SectionHeading';
-import { Facebook, Youtube, Instagram, Twitter, ExternalLink } from 'lucide-react';
+import { Globe2, Mail, LogIn, ExternalLink } from 'lucide-react';
 import { Reveal } from './ui/Reveal';
 
 export function HomeSocial() {
-  const socials = [
+  const channels = [
     {
-      name: 'Facebook Page',
-      icon: <Facebook className="w-6 h-6" />,
-      color: 'bg-blue-600',
-      hoverColor: 'hover:bg-blue-700',
-      link: '#',
-      followers: '15K+'
+      name: 'School Website',
+      description: 'Visit the official SHKSC website',
+      icon: <Globe2 className="w-6 h-6" />,
+      color: 'bg-primary-800 hover:bg-primary-900',
+      link: 'https://shksc.edu.bd',
+      external: true
     },
     {
-      name: 'YouTube Channel',
-      icon: <Youtube className="w-6 h-6" />,
-      color: 'bg-red-600',
-      hoverColor: 'hover:bg-red-700',
-      link: '#',
-      followers: '5K+'
+      name: 'Email SHKSC',
+      description: 'info.shksc@gmail.com',
+      icon: <Mail className="w-6 h-6" />,
+      color: 'bg-accent-600 hover:bg-accent-700',
+      link: 'mailto:info.shksc@gmail.com',
+      external: false
     },
     {
-      name: 'Instagram',
-      icon: <Instagram className="w-6 h-6" />,
-      color: 'bg-pink-600',
-      hoverColor: 'hover:bg-pink-700',
-      link: '#',
-      followers: '8K+'
-    },
-    {
-      name: 'Twitter (X)',
-      icon: <Twitter className="w-6 h-6" />,
-      color: 'bg-slate-800',
-      hoverColor: 'hover:bg-slate-900',
-      link: '#',
-      followers: '3K+'
+      name: 'Portal Login',
+      description: 'Access your assigned dashboard',
+      icon: <LogIn className="w-6 h-6" />,
+      color: 'bg-slate-700 hover:bg-slate-800',
+      link: '/login',
+      external: false
     }
   ];
 
@@ -43,28 +35,28 @@ export function HomeSocial() {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading 
-          eyebrow="Connect With Us"
-          title="Join Our Social Community"
-          subtitle="Follow us on social media to get instant updates, live event coverage, and behind-the-scenes moments."
+          eyebrow="Official Channels"
+          title="Connect With SHKSC"
+          subtitle="Use these verified destinations for school information, support, and portal access."
         />
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-          {socials.map((social, index) => (
-            <Reveal key={social.name} delay={index * 0.1}>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {channels.map((channel, index) => (
+            <Reveal key={channel.name} delay={index * 0.1}>
               <a 
-                href={social.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`flex flex-col items-center justify-center p-8 rounded-2xl text-white transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${social.color} ${social.hoverColor} group`}
+                href={channel.link}
+                target={channel.external ? '_blank' : undefined}
+                rel={channel.external ? 'noopener noreferrer' : undefined}
+                className={`flex h-full flex-col items-center justify-center p-8 rounded-2xl text-white text-center transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${channel.color} group`}
               >
                 <div className="bg-white/20 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {social.icon}
+                  {channel.icon}
                 </div>
-                <h3 className="font-bold text-lg mb-1">{social.name}</h3>
-                <p className="text-white/80 text-sm mb-4">{social.followers} Followers</p>
+                <h3 className="font-bold text-lg mb-1">{channel.name}</h3>
+                <p className="text-white/80 text-sm mb-4">{channel.description}</p>
                 
                 <span className="flex items-center gap-2 text-sm font-medium bg-white/10 px-4 py-2 rounded-full group-hover:bg-white/20 transition-colors">
-                  Follow Us <ExternalLink className="w-4 h-4" />
+                  Open <ExternalLink className="w-4 h-4" />
                 </span>
               </a>
             </Reveal>

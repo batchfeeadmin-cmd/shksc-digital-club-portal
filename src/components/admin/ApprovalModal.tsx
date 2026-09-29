@@ -70,15 +70,15 @@ export function ApprovalModal({ isOpen, onClose, request, currentClubData, onApp
   const changedFields = buildDiffFields(request, currentClubData);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-950/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-950/40 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="approval-modal-title">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-slate-50 shrink-0">
           <div>
-            <h3 className="text-xl font-heading font-bold text-primary-950">Review Update Request</h3>
+            <h3 id="approval-modal-title" className="text-xl font-heading font-bold text-primary-950">Review Update Request</h3>
             <p className="text-sm text-gray-500 mt-1">{request.clubName} • {request.type}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-200">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-200" aria-label="Close update review">
             <X size={20} />
           </button>
         </div>

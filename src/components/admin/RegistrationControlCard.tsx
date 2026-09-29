@@ -8,6 +8,7 @@ export const RegistrationControlCard = () => {
   const { state, saveState } = useRegistrationState();
   const [formData, setFormData] = useState<RegistrationState>(state);
   const [saved, setSaved] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
     setFormData(state);
@@ -22,7 +23,13 @@ export const RegistrationControlCard = () => {
   };
 
   const handleSave = () => {
+    if (formData.startDate && formData.closingDate && formData.startDate > formData.closingDate) {
+      setValidationError('Closing date must be the same as or later than the start date.');
+      return;
+    }
+
     saveState(formData);
+    setValidationError('');
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -51,6 +58,11 @@ export const RegistrationControlCard = () => {
       </div>
 
       <div className="p-6 space-y-6">
+        {validationError && (
+          <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+            {validationError}
+          </p>
+        )}
         <div className="grid md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Registration Year</label>
@@ -65,6 +77,7 @@ export const RegistrationControlCard = () => {
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
             <input 
+              required
               type="date" 
               name="startDate"
               value={formData.startDate} 
@@ -75,6 +88,7 @@ export const RegistrationControlCard = () => {
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Closing Date</label>
             <input 
+              required
               type="date" 
               name="closingDate"
               value={formData.closingDate} 

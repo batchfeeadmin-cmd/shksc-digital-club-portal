@@ -1,13 +1,18 @@
 import React from 'react';
 import { CountUp } from './ui/CountUp';
 import { Reveal } from './ui/Reveal';
+import { useClubsData } from '../hooks/useAdminData';
 
 export function Stats() {
+  const { clubs } = useClubsData();
+  const knownMembers = clubs.reduce((total, club) => total + club.memberCount, 0);
+  const knownAchievements = clubs.reduce((total, club) => total + (club.achievementCount ?? 0), 0);
+  const listedActivities = clubs.reduce((total, club) => total + (club.activities?.length ?? 0), 0);
   const stats = [
-    { label: 'Active Clubs', value: 13 },
-    { label: 'Student Members', value: 1000 },
-    { label: 'Achievements', value: 50 },
-    { label: 'Annual Activities', value: 20 },
+    { label: 'Active Clubs', value: clubs.length, suffix: '' },
+    { label: 'Documented Members', value: knownMembers, suffix: knownMembers > 0 ? '+' : '' },
+    { label: 'Documented Achievements', value: knownAchievements, suffix: knownAchievements > 0 ? '+' : '' },
+    { label: 'Listed Activities', value: listedActivities, suffix: '' },
   ];
 
   return (
@@ -20,7 +25,7 @@ export function Stats() {
           {stats.map((stat, index) => (
             <Reveal key={index} delay={index * 100} className="text-center group">
               <p className="text-4xl md:text-5xl font-heading font-extrabold text-primary-900 mb-2 transition-transform duration-300 group-hover:scale-110 origin-bottom">
-                <CountUp value={stat.value} suffix="+" />
+                <CountUp value={stat.value} suffix={stat.suffix} />
               </p>
               <p className="text-sm font-medium text-gray-600">{stat.label}</p>
             </Reveal>

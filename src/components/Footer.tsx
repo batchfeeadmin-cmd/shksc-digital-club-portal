@@ -1,5 +1,6 @@
 import React from 'react';
 import { SchoolLogo } from './ui/SchoolLogo';
+import { Link } from 'react-router-dom';
 
 export function Footer() {
   return (
@@ -26,11 +27,11 @@ export function Footer() {
           <div>
             <h3 className="font-heading font-semibold text-lg mb-6">Quick Links</h3>
             <ul className="space-y-3">
-              {['Home', 'Clubs', 'Achievements', 'Registration', 'About'].map(link => (
-                <li key={link}>
-                  <a href="#" className="text-primary-100/70 hover:text-white transition-colors text-sm">{link}</a>
-                </li>
-              ))}
+              <li><Link to="/" className="text-primary-100/70 hover:text-white transition-colors text-sm">Home</Link></li>
+              <li><Link to="/clubs" className="text-primary-100/70 hover:text-white transition-colors text-sm">Clubs</Link></li>
+              <li><a href="/#achievements" className="text-primary-100/70 hover:text-white transition-colors text-sm">Achievements</a></li>
+              <li><Link to="/registration" className="text-primary-100/70 hover:text-white transition-colors text-sm">Registration</Link></li>
+              <li><a href="/#about" className="text-primary-100/70 hover:text-white transition-colors text-sm">About</a></li>
             </ul>
           </div>
 
@@ -38,11 +39,9 @@ export function Footer() {
           <div>
             <h3 className="font-heading font-semibold text-lg mb-6">Useful Links</h3>
             <ul className="space-y-3">
-              {['Student Login', 'Contact Us', 'Privacy Policy', 'Terms of Service'].map(link => (
-                <li key={link}>
-                  <a href={link === 'Student Login' ? '/login' : '#'} className="text-primary-100/70 hover:text-white transition-colors text-sm">{link}</a>
-                </li>
-              ))}
+              <li><Link to="/login" className="text-primary-100/70 hover:text-white transition-colors text-sm">Portal Login</Link></li>
+              <li><a href="mailto:info.shksc@gmail.com" className="text-primary-100/70 hover:text-white transition-colors text-sm">Contact Us</a></li>
+              <li><a href="https://shksc.edu.bd" target="_blank" rel="noopener noreferrer" className="text-primary-100/70 hover:text-white transition-colors text-sm">School Website</a></li>
             </ul>
           </div>
 
@@ -64,7 +63,7 @@ export function Footer() {
 
         <div className="border-t border-primary-800 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-primary-100/50 text-sm flex flex-col sm:flex-row gap-2 sm:gap-8 items-center text-center sm:text-left">
-            <p>&copy; 2026 SHKSC. All Rights Reserved.</p>
+            <p>&copy; {new Date().getFullYear()} SHKSC. All Rights Reserved.</p>
             <div className="flex items-center gap-2">
               <span className="opacity-70">Contact with developer:</span>
               <a 
@@ -80,18 +79,9 @@ export function Footer() {
               </a>
             </div>
           </div>
-          <div className="flex gap-4">
-            {/* Social Icons Placeholders */}
-            <div className="w-8 h-8 rounded-full bg-primary-800 flex items-center justify-center opacity-70 hover:opacity-100 cursor-pointer transition-opacity">
-              <span className="text-xs">FB</span>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-primary-800 flex items-center justify-center opacity-70 hover:opacity-100 cursor-pointer transition-opacity">
-              <span className="text-xs">IG</span>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-primary-800 flex items-center justify-center opacity-70 hover:opacity-100 cursor-pointer transition-opacity">
-              <span className="text-xs">X</span>
-            </div>
-          </div>
+          <a href="https://shksc.edu.bd" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary-100/70 hover:text-white transition-colors">
+            shksc.edu.bd
+          </a>
         </div>
       </div>
     </footer>

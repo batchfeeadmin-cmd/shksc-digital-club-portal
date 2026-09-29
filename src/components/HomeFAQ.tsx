@@ -14,7 +14,7 @@ const faqs = [
   },
   {
     question: "How do I pay the club fees?",
-    answer: "All club fees must be paid digitally through our integrated SSLCommerz payment gateway. You can use bKash, Nagad, credit/debit cards, or internet banking directly from your student dashboard."
+    answer: "This frontend demo uses a clearly marked payment simulation and never charges real money. After backend approval, the production portal can integrate SSLCommerz with secure server-side verification."
   },
   {
     question: "Who can I contact if I face issues during registration?",

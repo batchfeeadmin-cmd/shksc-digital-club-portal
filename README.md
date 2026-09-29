@@ -1,20 +1,44 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# SHKSC Digital Club Portal
 
-# Run and deploy your AI Studio app
+A React/Vite demo for club discovery, student registration, school verification, payments, and role-based administration for Shamsul Hoque Khan School & College.
 
-This contains everything you need to run your app locally.
+## Run locally
 
-View your app in AI Studio: https://ai.studio/apps/c762150d-97f4-4f61-805b-cba3746620f1
+```bash
+npm install
+npm run dev
+```
 
-## Run Locally
+Useful scripts: `npm run typecheck`, `npm run build`, `npm run check`, `npm run preview`, and `npm run clean`.
 
-**Prerequisites:**  Node.js
+## Demo accounts
 
+| Role | Email | Password |
+| --- | --- | --- |
+| Root admin | `admin@shksc.edu` | `admin123` |
+| Club admin | `science@shksc.edu` | `club123` |
+| Student | `student@shksc.edu` | `student123` |
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+The app currently uses localStorage-backed demo services. It is suitable for a stakeholder demo, not production authentication or data storage.
+
+## Registration demo
+
+When the master student database contains records, registration verifies the official school ID and fills the student's name, class, roll, and section. The seeded IDs include `SHKSC-2026-001` through `SHKSC-2026-005`; the first seeded student is already registered, so use `SHKSC-2026-004` for a fresh walkthrough.
+
+The payment step is explicitly simulated. No gateway credentials or real charge are used in the browser. A backend implementation should create and verify payment sessions server-side, hash passwords, validate webhooks, and persist records in a real database before launch.
+
+## Main areas
+
+- Public landing page, notices, clubs, achievements, FAQ, and registration
+- Root admin: users, clubs, payments, reports, CMS, master student import, academic year, and settings
+- Club admin: club profile, students, fees, notices, events, committee, certificates, and communications
+- Student portal: profile, registration, club, payment, receipt, and notices
+- Finance workflow: monthly honorarium requests, separate club expenses, Root Admin approval, printable vouchers, recipient signatures, and expense-proof follow-up
+- Batch workflow: club-specific class/batch requests, day/time and instructor assignment, Root Admin approval, daily present/absent/late attendance, and cross-club reporting
+
+## Backend handoff roadmap
+
+1. Replace localStorage services with authenticated API calls and a database.
+2. Move password hashing, role/permission checks, payment creation, and webhook verification to the server.
+3. Add audit logging, rate limiting, backups, and server-side validation.
+4. Replace demo content and placeholder contact data with institution-approved records and verified social URLs.

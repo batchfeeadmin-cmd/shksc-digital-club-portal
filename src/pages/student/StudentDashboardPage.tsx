@@ -11,7 +11,7 @@ import {
 import { useClubsData } from '../../hooks/useAdminData';
 import { useAuth } from '../../context/AuthContext';
 import { getStudentByEmail } from '../../services/students/studentService';
-import { getClubFees, confirmPayment } from '../../services/payments/paymentService';
+import { getClubFees, confirmPayment, getPaymentByTransactionId } from '../../services/payments/paymentService';
 import { createPaymentSession, validatePayment, generateTranId } from '../../services/payments/sslCommerzService';
 import { getNoticesByClub } from '../../services/notices/noticeService';
 import { getSystemAlertsForStudent } from '../../services/communication/communicationService';
@@ -40,6 +40,7 @@ export function StudentDashboardPage() {
 
   const openReceipt = () => {
     if (!student || !club) return;
+    const payment = student.receiptTxnId ? getPaymentByTransactionId(student.receiptTxnId) : undefined;
     setReceipt({
       receiptNo: student.receiptTxnId || student.studentId,
       date: new Date().toISOString(),
@@ -52,7 +53,7 @@ export function StudentDashboardPage() {
       affilCost,
       total,
       txnId: student.receiptTxnId || '—',
-      method: 'SSLCommerz',
+      method: payment?.method || 'Online',
       status: 'Paid'
     });
     setReceiptOpen(true);
@@ -168,11 +169,11 @@ export function StudentDashboardPage() {
             <div className="bg-accent-50 border border-accent-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <p className="font-bold text-primary-950">Complete your registration</p>
-                <p className="text-xs text-gray-600 mt-0.5">Pay securely through SSLCommerz to confirm your club membership.</p>
+                <p className="text-xs text-gray-600 mt-0.5">Run the simulated demo payment to confirm your club membership. No real charge occurs.</p>
               </div>
               <Button onClick={handlePayNow} disabled={paying} className="bg-accent-500 hover:bg-accent-600 text-white gap-2 shrink-0">
                 {paying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
-                {paying ? 'Processing...' : `Pay ${total.toLocaleString()} ৳`}
+                {paying ? 'Simulating...' : `Simulate ${total.toLocaleString()} ৳`}
               </Button>
             </div>
           )}

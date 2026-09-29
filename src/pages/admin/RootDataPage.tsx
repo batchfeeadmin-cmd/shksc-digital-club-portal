@@ -4,6 +4,30 @@ import { Database, Upload, Trash2, CheckCircle2, AlertCircle } from 'lucide-reac
 import { Button } from '../../components/ui/button';
 import { getMasterStudents, saveMasterStudents, clearMasterStudents, type MasterStudent } from '../../services/students/masterStudentService';
 
+const parseCSVLine = (line: string): string[] => {
+  const cells: string[] = [];
+  let cell = '';
+  let quoted = false;
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+    if (char === '"' && quoted && line[i + 1] === '"') {
+      cell += '"';
+      i += 1;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === ',' && !quoted) {
+      cells.push(cell.trim());
+      cell = '';
+    } else {
+      cell += char;
+    }
+  }
+
+  cells.push(cell.trim());
+  return cells;
+};
+
 export function RootDataPage() {
   const [students, setStudents] = useState<MasterStudent[]>([]);
   const [csvText, setCsvText] = useState('');
@@ -18,12 +42,12 @@ export function RootDataPage() {
 
   const handleImport = () => {
     try {
-      const lines = csvText.trim().split('\n');
+      const lines = csvText.trim().split(/\r?\n/).filter(Boolean);
       if (lines.length < 2) {
         throw new Error('CSV must contain a header row and at least one data row.');
       }
       
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const headers = parseCSVLine(lines[0]).map(h => h.replace(/^\uFEFF/, '').trim().toLowerCase());
       
       const idIdx = headers.findIndex(h => h.includes('id'));
       const nameIdx = headers.findIndex(h => h.includes('name'));
@@ -38,7 +62,7 @@ export function RootDataPage() {
       const newStudents: MasterStudent[] = [];
 
       for (let i = 1; i < lines.length; i++) {
-        const row = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        const row = parseCSVLine(lines[i]);
         if (row.length < 3 || !row[idIdx]) continue;
 
         newStudents.push({
@@ -50,8 +74,22 @@ export function RootDataPage() {
         });
       }
 
-      saveMasterStudents([...students, ...newStudents]);
-      setMessage({ type: 'success', text: `Successfully imported ${newStudents.length} students.` });
+      if (newStudents.length === 0) {
+        throw new Error('No valid student rows were found in the CSV content.');
+      }
+
+      const merged = new Map(students.map(student => [student.studentId.trim().toUpperCase(), student]));
+      let added = 0;
+      let updated = 0;
+      newStudents.forEach(student => {
+        const key = student.studentId.trim().toUpperCase();
+        if (merged.has(key)) updated += 1;
+        else added += 1;
+        merged.set(key, { ...student, studentId: student.studentId.trim() });
+      });
+
+      saveMasterStudents(Array.from(merged.values()));
+      setMessage({ type: 'success', text: `Import complete: ${added} added, ${updated} updated.` });
       setCsvText('');
     } catch (e: any) {
       setMessage({ type: 'error', text: e.message || 'Failed to parse CSV.' });

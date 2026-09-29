@@ -38,14 +38,14 @@ const defaultCMSData: CMSData = {
       name: 'Honorable Chairman',
       title: 'SHKSC GOVERNING BODY',
       quote: "Education is not just about academic excellence, but also about building character, creativity, and leadership. Our digital club portal is a stepping stone for students to explore their hidden talents and prepare for a brilliant future. I strongly encourage every student to participate actively.",
-      image: '/chairman.png'
+      image: '/chairman.jpg'
     },
     {
       id: 'principal',
       name: 'Respected Principal',
-      title: 'Shaheed Police Smrity College',
+      title: 'SHKSC PRINCIPAL',
       quote: "The diverse clubs at SHKSC offer a fantastic platform for students to grow beyond the classroom. By engaging in these extracurricular activities, students build teamwork, discipline, and lifelong skills. We are proud to launch this digital portal to make club activities more accessible.",
-      image: '/principle.png'
+      image: '/principle.jpg'
     }
   ],
   notices: [
@@ -75,7 +75,15 @@ const defaultCMSData: CMSData = {
 
 export const getCMSData = (): CMSData => {
   const saved = localStorage.getItem(CMS_STORAGE_KEY);
-  if (saved) return JSON.parse(saved);
+  if (saved) {
+    const data = JSON.parse(saved) as CMSData;
+    const principal = data.messages.find(message => message.id === 'principal');
+    if (principal?.title === 'Shaheed Police Smrity College') {
+      principal.title = 'SHKSC PRINCIPAL';
+      localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(data));
+    }
+    return data;
+  }
   
   localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(defaultCMSData));
   return defaultCMSData;

@@ -3,10 +3,11 @@ import { Calendar, Users, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
 import { useRegistrationState } from '../hooks/useAdminData';
+import { isRegistrationCurrentlyOpen } from '../services/clubs/clubService';
 
 export function RegistrationStatus() {
   const { state: regState } = useRegistrationState();
-  const registrationOpen = regState.isOpen;
+  const registrationOpen = isRegistrationCurrentlyOpen(regState);
 
   const formattedDeadline = new Date(regState.closingDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -65,4 +66,3 @@ export function RegistrationStatus() {
     </div>
   );
 }
-

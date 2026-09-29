@@ -15,7 +15,7 @@ export function Header() {
   const getDashboardLink = () => {
     if (!user) return '/login';
     if (user.role === 'student') return '/student/dashboard';
-    if (user.role === 'root_admin') return '/admin/root/dashboard';
+    if (user.role === 'root_admin' || user.role === 'sub_admin') return '/admin/root/dashboard';
     if (user.role === 'club_admin') return '/admin/club/dashboard';
     return '/login';
   };
@@ -154,6 +154,8 @@ export function Header() {
           <button
             className="md:hidden p-2 text-gray-600 hover:text-primary-900 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -220,4 +222,3 @@ export function Header() {
     </header>
   );
 }
-

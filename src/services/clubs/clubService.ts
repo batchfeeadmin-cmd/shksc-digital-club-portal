@@ -44,6 +44,21 @@ export const getRegistrationState = (): RegistrationState => {
   return initialRegState;
 };
 
+export const isRegistrationCurrentlyOpen = (
+  state: RegistrationState,
+  now: Date = new Date()
+): boolean => {
+  if (!state.isOpen) return false;
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const today = `${year}-${month}-${day}`;
+
+  return (!state.startDate || today >= state.startDate) &&
+    (!state.closingDate || today <= state.closingDate);
+};
+
 export const updateRegistrationState = (state: RegistrationState): void => {
   localStorage.setItem(REG_STATE_KEY, JSON.stringify(state));
   triggerStateUpdate();

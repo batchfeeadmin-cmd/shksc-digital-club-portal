@@ -12,10 +12,7 @@ export interface MasterStudent {
 
 export const getMasterStudents = (): MasterStudent[] => {
   const saved = localStorage.getItem(MASTER_STUDENTS_STORAGE_KEY);
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    if (parsed.length > 0) return parsed;
-  }
+  if (saved !== null) return JSON.parse(saved) as MasterStudent[];
   
   // Demo Data
   const demoData: MasterStudent[] = [
@@ -35,10 +32,13 @@ export const saveMasterStudents = (students: MasterStudent[]): void => {
 };
 
 export const clearMasterStudents = (): void => {
-  localStorage.removeItem(MASTER_STUDENTS_STORAGE_KEY);
+  // Persist an intentional empty list. Removing the key would restore demo data
+  // on the next read and make manual-registration mode impossible to enable.
+  localStorage.setItem(MASTER_STUDENTS_STORAGE_KEY, '[]');
   triggerStateUpdate();
 };
 
 export const findMasterStudent = (studentId: string): MasterStudent | undefined => {
-  return getMasterStudents().find(s => s.studentId === studentId);
+  const normalized = studentId.trim().toUpperCase();
+  return getMasterStudents().find(s => s.studentId.trim().toUpperCase() === normalized);
 };

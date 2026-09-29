@@ -3,7 +3,7 @@ import { StudentLayout } from '../../components/student/StudentLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useClubsData } from '../../hooks/useAdminData';
 import { getStudentByEmail } from '../../services/students/studentService';
-import { getClubFees } from '../../services/payments/paymentService';
+import { getClubFees, getPaymentByTransactionId } from '../../services/payments/paymentService';
 import { ReceiptCard } from '../../components/student/StudentCards';
 import { ReceiptModal, ReceiptData } from '../../components/payments/ReceiptModal';
 import { ReceiptText } from 'lucide-react';
@@ -25,6 +25,7 @@ export function StudentReceiptPage() {
 
   const openReceipt = () => {
     if (!student || !club) return;
+    const payment = student.receiptTxnId ? getPaymentByTransactionId(student.receiptTxnId) : undefined;
     setReceipt({
       receiptNo: student.receiptTxnId || student.studentId,
       date: new Date().toISOString(),
@@ -38,7 +39,7 @@ export function StudentReceiptPage() {
       affilCost,
       total,
       txnId: student.receiptTxnId || '—',
-      method: 'SSLCommerz',
+      method: payment?.method || 'Online',
       status: 'Paid'
     });
     setReceiptOpen(true);

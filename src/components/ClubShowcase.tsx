@@ -4,6 +4,7 @@ import { ClubCard } from './ClubCard';
 import { Button } from './ui/button';
 import { Reveal } from './ui/Reveal';
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function ClubShowcase() {
   return (
@@ -33,8 +34,10 @@ export function ClubShowcase() {
         </div>
 
         <Reveal className="mt-16 text-center" delay={120}>
-          <Button variant="outline" size="lg" className="bg-white shine group">
-            View All Clubs <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+          <Button asChild variant="outline" size="lg" className="bg-white shine group">
+            <Link to="/clubs">
+              View All Clubs <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </Button>
         </Reveal>
 

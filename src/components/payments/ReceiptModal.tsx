@@ -220,7 +220,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ isOpen, onClose, rec
   const paid = receipt.status !== 'Pending';
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 bg-primary-950/60 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 bg-primary-950/60 backdrop-blur-sm overflow-y-auto" role="dialog" aria-modal="true" aria-label="Payment receipt">
       <div className="w-full max-w-2xl my-auto py-8">
         {/* Toolbar (hidden on print) */}
         <div className="flex items-center justify-between mb-4 print:hidden">
@@ -232,7 +232,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ isOpen, onClose, rec
             <Button onClick={handleDownload} className="bg-accent-500 text-white hover:bg-accent-600 gap-2 shadow-lg">
               <Download size={18} /> Download PDF
             </Button>
-            <button onClick={onClose} className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors ml-2">
+            <button onClick={onClose} className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors ml-2" aria-label="Close payment receipt">
               <X size={20} />
             </button>
           </div>

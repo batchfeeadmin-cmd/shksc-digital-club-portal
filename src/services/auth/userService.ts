@@ -1,4 +1,4 @@
-import { User, UserAccount } from '../../types';
+import { Student, User, UserAccount } from '../../types';
 import { triggerStateUpdate } from '../base';
 
 const USERS_STORAGE_KEY = 'shksc_users';
@@ -36,7 +36,7 @@ const seedUsers: UserAccount[] = [
   },
   {
     id: 'u-student',
-    name: 'Rahim Ahmed',
+    name: 'Arafat Rahman',
     email: 'student@shksc.edu',
     password: 'student123',
     role: 'student',
@@ -49,12 +49,18 @@ const seedUsers: UserAccount[] = [
 export const getAllUsers = (): UserAccount[] => {
   const saved = localStorage.getItem(USERS_STORAGE_KEY);
   if (saved) {
-    const parsed = JSON.parse(saved);
+    const parsed: UserAccount[] = JSON.parse(saved);
     // Legacy migration: old prototype used 'science-club' as club id
     let changed = false;
     parsed.forEach((u: UserAccount) => {
       if (u.clubId === 'science-club') {
         u.clubId = 'c3';
+        changed = true;
+      }
+
+      // Keep the seeded student login aligned with the seeded student record.
+      if (u.id === 'u-student' && u.email === 'student@shksc.edu' && u.name === 'Rahim Ahmed') {
+        u.name = 'Arafat Rahman';
         changed = true;
       }
     });
@@ -87,6 +93,31 @@ export const createUser = (user: UserAccount): void => {
   const users = getAllUsers();
   users.push({ ...user, createdAt: new Date().toISOString() });
   saveUsers(users);
+};
+
+export const activateStudentAccount = (student: Student, password: string): UserAccount => {
+  if (!student.email) {
+    throw new Error('A valid email address is required to activate the student account.');
+  }
+
+  if (getUserByEmail(student.email)) {
+    throw new Error('An account with this email address already exists.');
+  }
+
+  const account: UserAccount = {
+    id: `u-${student.id}`,
+    name: student.name,
+    email: student.email,
+    password,
+    role: 'student',
+    clubId: student.clubId,
+    className: student.class,
+    profilePicture: student.profilePicture,
+    status: 'Active'
+  };
+
+  createUser(account);
+  return account;
 };
 
 export const updateUser = (id: string, updates: Partial<UserAccount>): void => {

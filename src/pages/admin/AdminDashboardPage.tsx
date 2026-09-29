@@ -6,6 +6,7 @@ import { DataTable } from '../../components/admin/DataTable';
 import { ApprovalCard } from '../../components/admin/ApprovalCard';
 import { Users, BookOpen, DollarSign, CreditCard, Activity, Settings } from 'lucide-react';
 import { useClubsData, useUpdateRequests, useClubFees, useRegistrationState } from '../../hooks/useAdminData';
+import { isRegistrationCurrentlyOpen } from '../../services/clubs/clubService';
 import { getStudents } from '../../services/students/studentService';
 import { getPayments } from '../../services/payments/paymentService';
 import { approveRequest, rejectRequest } from '../../services/approvals/approvalService';
@@ -16,6 +17,7 @@ export function AdminDashboardPage() {
   const { requests } = useUpdateRequests();
   const { fees } = useClubFees();
   const { state: regState } = useRegistrationState();
+  const registrationOpen = isRegistrationCurrentlyOpen(regState);
   const [students, setStudents] = useState<Student[]>(getStudents());
   const [payments, setPayments] = useState<Payment[]>(getPayments());
 
@@ -156,11 +158,11 @@ export function AdminDashboardPage() {
                 <div className="flex justify-between items-start mb-6">
                   <h3 className="text-lg font-heading font-bold">Registration Status</h3>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide border ${
-                    regState.isOpen
+                    registrationOpen
                       ? 'bg-green-500/20 text-green-300 border-green-500/30'
                       : 'bg-red-500/20 text-red-300 border-red-500/30'
                   }`}>
-                    {regState.isOpen ? 'OPEN' : 'CLOSED'}
+                    {registrationOpen ? 'OPEN' : 'CLOSED'}
                   </span>
                 </div>
 

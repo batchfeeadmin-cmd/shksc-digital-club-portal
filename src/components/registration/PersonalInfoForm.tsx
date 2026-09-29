@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { ImageCropper } from '../ui/ImageCropper';
-import { getMasterStudents, findMasterStudent } from '../../services/students/masterStudentService';
-import { AlertCircle } from 'lucide-react';
+import { findMasterStudent, getMasterStudents } from '../../services/students/masterStudentService';
+import { getUserByEmail } from '../../services/auth/userService';
+import { getStudentByEmail, getStudents } from '../../services/students/studentService';
+import { AlertCircle, BadgeCheck, LockKeyhole } from 'lucide-react';
 
 interface PersonalInfoFormProps {
   formData: any;
@@ -11,11 +13,18 @@ interface PersonalInfoFormProps {
 }
 
 export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoFormProps) {
-  const [error, setError] = useState<string | null>(null);
+  const [verificationError, setVerificationError] = useState('');
+  const [accountError, setAccountError] = useState('');
+  const strictVerification = getMasterStudents().length > 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     updateData({ [e.target.name]: e.target.value });
-    if (error) setError(null);
+    if (e.target.name === 'schoolStudentId') {
+      setVerificationError('');
+    }
+    if (['email', 'password', 'confirmPassword'].includes(e.target.name)) {
+      setAccountError('');
+    }
   };
 
   const handleImageChange = (base64: string) => {
@@ -24,36 +33,93 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation against Master Database
-    const masterDB = getMasterStudents();
-    if (masterDB.length > 0) {
-      const match = findMasterStudent(formData.studentId);
-      if (!match) {
-        setError(`Student ID "${formData.studentId}" was not found in the official school database. Please contact administration.`);
+
+    const normalizedEmail = formData.email.trim().toLowerCase();
+    if (getUserByEmail(normalizedEmail) || getStudentByEmail(normalizedEmail)) {
+      setAccountError('This email is already connected to a portal account or registration.');
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setAccountError('Password must contain at least 8 characters.');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setAccountError('Password and confirmation do not match.');
+      return;
+    }
+
+    if (strictVerification) {
+      const matchedStudent = findMasterStudent(formData.schoolStudentId);
+
+      if (!matchedStudent) {
+        setVerificationError(
+          `Student ID "${formData.schoolStudentId.trim()}" was not found in the official school database.`
+        );
         return;
       }
-      
-      // Auto-fill matched details
+
+      const alreadyRegistered = getStudents().some(student =>
+        student.schoolStudentId?.trim().toUpperCase() === matchedStudent.studentId.trim().toUpperCase()
+      );
+      if (alreadyRegistered) {
+        setVerificationError('This official Student ID already has a club registration.');
+        return;
+      }
+
       updateData({
-        fullName: match.name,
-        class: match.class,
-        rollNumber: match.roll || formData.rollNumber,
-        section: match.section || formData.section
+        schoolStudentId: matchedStudent.studentId,
+        fullName: matchedStudent.name,
+        class: matchedStudent.class,
+        rollNumber: matchedStudent.roll,
+        section: matchedStudent.section || ''
       });
     }
 
+    updateData({ email: normalizedEmail });
+    setVerificationError('');
+    setAccountError('');
     onNext();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
       <h3 className="text-xl font-heading font-bold text-primary-950 mb-6 pb-4 border-b border-gray-100">Student Information</h3>
-      
-      {error && (
-        <div className="bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl flex items-start gap-3 mb-6">
-          <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-          <p className="text-sm font-medium">{error}</p>
+
+      <div className={`rounded-xl border p-4 ${strictVerification ? 'border-primary-100 bg-primary-50' : 'border-amber-200 bg-amber-50'}`}>
+        <div className="flex items-start gap-3">
+          <BadgeCheck className="w-5 h-5 text-primary-600 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-bold text-primary-950">
+              {strictVerification ? 'Official student verification' : 'Manual registration mode'}
+            </p>
+            <p className={`text-xs mt-1 ${strictVerification ? 'text-primary-700' : 'text-amber-700'}`}>
+              {strictVerification
+                ? 'Enter your school-issued Student ID. For this demo, try SHKSC-2026-004.'
+                : 'The master database is empty, so a School Student ID is optional and details can be entered manually.'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {verificationError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 flex items-start gap-3" role="alert">
+          <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-bold">Student verification failed</p>
+            <p className="text-sm mt-1">{verificationError}</p>
+          </div>
+        </div>
+      )}
+
+      {accountError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 flex items-start gap-3" role="alert">
+          <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-bold">Portal account could not be prepared</p>
+            <p className="text-sm mt-1">{accountError}</p>
+          </div>
         </div>
       )}
 
@@ -66,13 +132,26 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
       </div>
       
       <div className="grid md:grid-cols-2 gap-6">
+        <div className="md:col-span-2">
+          <label htmlFor="schoolStudentId" className="block text-sm font-semibold text-gray-700 mb-2">
+            School Student ID {strictVerification ? '*' : '(optional)'}
+          </label>
+          <input
+            required={strictVerification}
+            id="schoolStudentId"
+            type="text"
+            name="schoolStudentId"
+            value={formData.schoolStudentId}
+            onChange={handleChange}
+            autoComplete="off"
+            placeholder="e.g. SHKSC-2026-001"
+            className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all uppercase"
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
           <input required type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Student ID *</label>
-          <input required type="text" name="studentId" value={formData.studentId} onChange={handleChange} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
         </div>
         
         <div>
@@ -121,8 +200,28 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
           <input required type="tel" name="mobile" value={formData.mobile} onChange={handleChange} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+          <input required type="email" name="email" value={formData.email} onChange={handleChange} autoComplete="email" className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
+        </div>
+
+        <div className="md:col-span-2 rounded-xl border border-gray-200 bg-slate-50 p-5">
+          <div className="flex items-start gap-3 mb-5">
+            <LockKeyhole className="w-5 h-5 text-primary-600 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-primary-950">Create your Student Portal login</p>
+              <p className="text-xs text-gray-500 mt-1">Your account will activate automatically after successful payment.</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Password *</label>
+              <input required minLength={8} type="password" name="password" value={formData.password} onChange={handleChange} autoComplete="new-password" className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all bg-white" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password *</label>
+              <input required minLength={8} type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} autoComplete="new-password" className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all bg-white" />
+            </div>
+          </div>
         </div>
 
         <div className="md:col-span-2">

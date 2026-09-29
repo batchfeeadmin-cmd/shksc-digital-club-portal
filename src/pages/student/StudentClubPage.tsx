@@ -40,11 +40,13 @@ export function StudentClubPage() {
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-500">Total Members</p>
-                  <p className="text-lg font-bold text-primary-950">{club.memberCount || 120}+</p>
+                  <p className="text-lg font-bold text-primary-950">
+                    {club.memberCount > 0 ? `${club.memberCount}+` : 'Not documented'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Established</p>
-                  <p className="text-lg font-bold text-primary-950">{club.establishedYear || '2023'}</p>
+                  <p className="text-lg font-bold text-primary-950">{club.establishedYear || 'Not documented'}</p>
                 </div>
               </div>
             </div>

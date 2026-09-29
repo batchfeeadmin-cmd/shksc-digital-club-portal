@@ -3,8 +3,6 @@ import { triggerStateUpdate } from '../base';
 const SETTINGS_STORAGE_KEY = 'shksc_system_settings';
 
 export interface PaymentSettings {
-  sslcommerzStoreId: string;
-  sslcommerzStorePassword: string;
   bkashNumber: string;
   nagadNumber: string;
   rocketNumber: string;
@@ -21,12 +19,10 @@ const defaultSettings: SystemSettings = {
   maintenanceMode: false,
   maintenanceMessage: 'The system is currently undergoing scheduled maintenance. Please check back later.',
   paymentSettings: {
-    sslcommerzStoreId: 'shksc_live',
-    sslcommerzStorePassword: '****************',
     bkashNumber: '01711-000000 (Personal)',
     nagadNumber: '01711-000000 (Personal)',
     rocketNumber: '01711-000000-0',
-    paymentInstructions: 'Please use the SSLCommerz gateway for instant automatic confirmation. For manual payments, send money to the numbers above and contact your Club Admin with the TrxID.'
+    paymentInstructions: 'Online payment is simulated in this frontend demo. Real gateway processing and verification will be enabled after the backend is approved and implemented.'
   }
 };
 

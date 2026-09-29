@@ -4,10 +4,11 @@ import { Button } from './ui/button';
 import { Reveal } from './ui/Reveal';
 import { Link } from 'react-router-dom';
 import { useRegistrationState } from '../hooks/useAdminData';
+import { isRegistrationCurrentlyOpen } from '../services/clubs/clubService';
 
 export function CTASection() {
   const { state: regState } = useRegistrationState();
-  const registrationOpen = regState.isOpen;
+  const registrationOpen = isRegistrationCurrentlyOpen(regState);
 
   return (
     <section className="py-24 bg-white relative overflow-hidden">

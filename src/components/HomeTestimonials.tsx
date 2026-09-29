@@ -79,12 +79,14 @@ export function HomeTestimonials() {
             <button 
               onClick={prevTestimonial}
               className="p-3 rounded-full bg-primary-900 text-white hover:bg-accent-500 transition-colors border border-primary-800 hover:border-accent-500 focus:outline-none"
+              aria-label="Previous testimonial"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button 
               onClick={nextTestimonial}
               className="p-3 rounded-full bg-primary-900 text-white hover:bg-accent-500 transition-colors border border-primary-800 hover:border-accent-500 focus:outline-none"
+              aria-label="Next testimonial"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -95,6 +97,8 @@ export function HomeTestimonials() {
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
+                aria-label={`Show testimonial ${idx + 1}`}
+                aria-current={currentIndex === idx}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   currentIndex === idx ? 'bg-accent-500 w-8' : 'bg-primary-800 hover:bg-primary-600'
                 }`}

@@ -7,11 +7,13 @@ const initialStudents: Student[] = [
   {
     id: '1',
     studentId: 'SHKSC-REG-2026-001',
+    schoolStudentId: 'SHKSC-2026-001',
     name: 'Arafat Rahman',
     class: '10',
+    section: 'A',
     roll: '12',
     mobile: '01711-123456',
-    email: 'arafat.rahman@shksc.edu.bd',
+    email: 'student@shksc.edu',
     clubId: 'c3',
     registrationStatus: 'Confirmed',
     receiptTxnId: 'TXN-SHKSC-001'
@@ -127,12 +129,32 @@ const initialStudents: Student[] = [
 export const getStudents = (): Student[] => {
   const saved = localStorage.getItem(STUDENTS_STORAGE_KEY);
   if (saved) {
-    const parsed = JSON.parse(saved);
+    const parsed: Student[] = JSON.parse(saved);
     // Legacy migration: old prototype used 'science-club' as club id
     let changed = false;
     parsed.forEach((s: Student) => {
       if (s.clubId === 'science-club') {
         s.clubId = 'c3';
+        changed = true;
+      }
+
+      // Keep the original seeded student connected to the demo login account.
+      if (
+        s.id === '1' &&
+        s.studentId === 'SHKSC-REG-2026-001' &&
+        s.email === 'arafat.rahman@shksc.edu.bd'
+      ) {
+        s.email = 'student@shksc.edu';
+        changed = true;
+      }
+
+      if (
+        s.id === '1' &&
+        s.studentId === 'SHKSC-REG-2026-001' &&
+        !s.schoolStudentId
+      ) {
+        s.schoolStudentId = 'SHKSC-2026-001';
+        s.section = s.section || 'A';
         changed = true;
       }
     });

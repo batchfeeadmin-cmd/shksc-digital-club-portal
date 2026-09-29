@@ -7,10 +7,15 @@ import { ReviewCard } from '../components/registration/ReviewCard';
 import { SuccessScreen } from '../components/registration/SuccessScreen';
 import { Student } from '../types';
 import { addStudent } from '../services/students/studentService';
+import { useRegistrationState } from '../hooks/useAdminData';
+import { isRegistrationCurrentlyOpen } from '../services/clubs/clubService';
+import { CalendarX2 } from 'lucide-react';
 
 export function RegistrationPage() {
   const [searchParams] = useSearchParams();
   const preselectedClub = searchParams.get('club') || '';
+  const { state: registrationState } = useRegistrationState();
+  const registrationOpen = isRegistrationCurrentlyOpen(registrationState);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -25,9 +30,11 @@ export function RegistrationPage() {
     class: '',
     section: '',
     rollNumber: '',
-    studentId: '',
+    schoolStudentId: '',
     mobile: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     address: '',
     selectedClubId: preselectedClub,
     profilePicture: ''
@@ -45,11 +52,18 @@ export function RegistrationPage() {
     const student = addStudent({
       id: `stu-${Date.now()}`,
       studentId: '',
+      schoolStudentId: formData.schoolStudentId.trim().toUpperCase() || undefined,
       name: formData.fullName,
+      fatherName: formData.fatherName,
+      motherName: formData.motherName,
+      dateOfBirth: formData.dob,
+      gender: formData.gender,
       class: formData.class,
+      section: formData.section,
       roll: formData.rollNumber,
       mobile: formData.mobile,
       email: formData.email,
+      address: formData.address,
       clubId: formData.selectedClubId,
       registrationStatus: 'Pending Payment',
       profilePicture: formData.profilePicture
@@ -66,6 +80,19 @@ export function RegistrationPage() {
   return (
     <div className="min-h-screen bg-surface-sec pt-24 pb-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        {!registrationOpen ? (
+          <div className="mt-12 rounded-2xl border border-amber-200 bg-white p-8 text-center shadow-sm" role="status">
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+              <CalendarX2 className="h-7 w-7" />
+            </div>
+            <h1 className="text-3xl font-heading font-bold text-primary-950">Registration is currently closed</h1>
+            <p className="mt-3 text-gray-600">{registrationState.message}</p>
+            {registrationState.closingDate && (
+              <p className="mt-2 text-sm text-gray-500">Configured closing date: {registrationState.closingDate}</p>
+            )}
+          </div>
+        ) : (
+          <>
         
         {!isSuccess && (
           <div className="text-center mb-10">
@@ -111,6 +138,8 @@ export function RegistrationPage() {
           )}
         </div>
 
+          </>
+        )}
       </div>
     </div>
   );

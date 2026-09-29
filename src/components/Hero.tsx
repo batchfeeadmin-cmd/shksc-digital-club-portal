@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
-import { useRegistrationState } from '../hooks/useAdminData';
+import { useClubsData, useRegistrationState } from '../hooks/useAdminData';
 import { Reveal } from './ui/Reveal';
 import { getCMSData, CMSData } from '../services/cms/cmsService';
+import { isRegistrationCurrentlyOpen } from '../services/clubs/clubService';
 
 export function Hero() {
   const { state: regState } = useRegistrationState();
-  const registrationOpen = regState.isOpen;
+  const { clubs } = useClubsData();
+  const registrationOpen = isRegistrationCurrentlyOpen(regState);
   const [cmsData, setCmsData] = useState<CMSData | null>(null);
 
   useEffect(() => {
@@ -55,26 +57,28 @@ export function Hero() {
               {cmsData?.hero.subHeadline}
             </p>
             
-            <div className="hero-word flex flex-col sm:flex-row gap-4" style={{ animationDelay: '660ms' }}>
-              {registrationOpen ? (
-                <Button asChild size="lg" className="group shine">
-                  <Link to="/registration">
-                    <Sparkles className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                    Apply for Club Registration
+            <div className="hero-word" style={{ animationDelay: '660ms' }}>
+              <div className="flex flex-col sm:flex-row gap-8">
+                {registrationOpen ? (
+                  <Button asChild size="lg" className="group shine">
+                    <Link to="/registration">
+                      <Sparkles className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                      Apply for Club Registration
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button size="lg" className="group" disabled>
+                    Registration Closed
+                  </Button>
+                )}
+                <Button asChild variant="outline" size="lg" className="group">
+                  <Link to="/clubs">
+                    Explore Clubs
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-              ) : (
-                <Button size="lg" className="group" disabled>
-                  Registration Closed
-                </Button>
-              )}
-              <Button asChild variant="outline" size="lg" className="group">
-                <Link to="/clubs">
-                  Explore Clubs
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
+              </div>
             </div>
           </div>
 
@@ -90,8 +94,8 @@ export function Hero() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-950/80 via-primary-950/20 to-transparent"></div>
                 <div className="absolute bottom-6 left-6 right-6">
-                  <p className="text-white font-medium text-lg leading-tight mb-2">"Joining the Science Club changed my entire high school experience."</p>
-                  <p className="text-white/80 text-sm">— Sarah J., Class of '26</p>
+                  <p className="text-white font-medium text-lg leading-tight mb-2">Explore interests, build practical skills, and grow through student-led activities.</p>
+                  <p className="text-white/80 text-sm">SHKSC Digital Club Portal</p>
                 </div>
               </div>
             </div>
@@ -102,8 +106,8 @@ export function Hero() {
                 <Sparkles className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-primary-950">13+</p>
-                <p className="text-sm font-medium text-gray-500">Active Communities</p>
+                <p className="text-2xl font-bold text-primary-950">{clubs.length}</p>
+                <p className="text-sm font-medium text-gray-500">Active Clubs</p>
               </div>
             </div>
 

@@ -95,18 +95,9 @@ export function RootSettingsPage() {
               <h3 className="font-bold text-gray-900">Payment Gateway Settings</h3>
             </div>
 
-            <div className="space-y-4 mb-6">
-              <p className="text-sm font-bold text-gray-800 border-b border-gray-50 pb-2">SSLCommerz API Credentials</p>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Store ID</label>
-                  <input type="text" value={settings.paymentSettings.sslcommerzStoreId} onChange={e => handlePaymentChange('sslcommerzStoreId', e.target.value)} className="w-full h-10 px-3 rounded-lg border border-gray-200 focus:border-primary-500 outline-none text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Store Password</label>
-                  <input type="password" value={settings.paymentSettings.sslcommerzStorePassword} onChange={e => handlePaymentChange('sslcommerzStorePassword', e.target.value)} className="w-full h-10 px-3 rounded-lg border border-gray-200 focus:border-primary-500 outline-none text-sm" />
-                </div>
-              </div>
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+              <p className="text-sm font-bold text-amber-900">Demo payment mode</p>
+              <p className="text-xs text-amber-800 mt-1">No real payment is charged. Gateway credentials will be configured securely on the backend after approval.</p>
             </div>
 
             <div className="space-y-4 mb-6">

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { StudentLayout } from '../../components/student/StudentLayout';
-import { User, Mail, Phone, BookOpen, Hash, GraduationCap, Camera } from 'lucide-react';
+import { User, Mail, Phone, BookOpen, Hash, GraduationCap, Camera, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getStudentByEmail, updateStudent } from '../../services/students/studentService';
 import { getClubs } from '../../services/clubs/clubService';
+import { ImageCropper } from '../../components/ui/ImageCropper';
+import { Button } from '../../components/ui/button';
 
 export function StudentProfilePage() {
   const { user } = useAuth();
+  const [pictureEditorOpen, setPictureEditorOpen] = useState(false);
+  const [draftPicture, setDraftPicture] = useState('');
+  const [profilePicture, setProfilePicture] = useState<string | undefined>(undefined);
   
   // Real student data
   const realStudent = user?.email ? getStudentByEmail(user.email) : null;
@@ -22,17 +27,20 @@ export function StudentProfilePage() {
     mobile: realStudent?.mobile || 'N/A',
     email: realStudent?.email || user?.email || 'N/A',
     clubName: clubName || 'N/A',
-    profilePicture: realStudent?.profilePicture || user?.profilePicture
+    profilePicture: profilePicture ?? realStudent?.profilePicture ?? user?.profilePicture
   };
 
-  const handleUpdatePicture = () => {
+  const openPictureEditor = () => {
     if (!realStudent) return;
-    const url = window.prompt('Enter Profile Picture URL:', realStudent.profilePicture || '');
-    if (url !== null) {
-      updateStudent(realStudent.id, { profilePicture: url });
-      // In a real app we'd also update the AuthContext user if needed, 
-      // but for this mock, state update event will re-render the layout.
-    }
+    setDraftPicture(student.profilePicture || '');
+    setPictureEditorOpen(true);
+  };
+
+  const savePicture = () => {
+    if (!realStudent || !draftPicture) return;
+    updateStudent(realStudent.id, { profilePicture: draftPicture });
+    setProfilePicture(draftPicture);
+    setPictureEditorOpen(false);
   };
 
   return (
@@ -51,8 +59,9 @@ export function StudentProfilePage() {
                 <User size={40} />
              )}
              <button 
-               onClick={handleUpdatePicture}
+               onClick={openPictureEditor}
                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white"
+               aria-label="Change profile picture"
              >
                <Camera size={24} />
              </button>
@@ -112,6 +121,27 @@ export function StudentProfilePage() {
           </div>
         </div>
       </div>
+
+      {pictureEditorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-950/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="picture-editor-title">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 id="picture-editor-title" className="text-xl font-bold text-primary-950">Update profile picture</h2>
+                <p className="mt-1 text-sm text-gray-500">Choose and crop a clear square portrait.</p>
+              </div>
+              <button onClick={() => setPictureEditorOpen(false)} className="rounded-full p-2 text-gray-500 hover:bg-gray-100" aria-label="Close profile picture editor">
+                <X size={20} />
+              </button>
+            </div>
+            <ImageCropper value={draftPicture} onChange={setDraftPicture} />
+            <div className="mt-6 flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setPictureEditorOpen(false)}>Cancel</Button>
+              <Button onClick={savePicture} disabled={!draftPicture}>Save picture</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </StudentLayout>
   );
 }

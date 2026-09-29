@@ -121,7 +121,7 @@ const initialPayments: Payment[] = [
     studentId: 'SHKSC-REG-2026-002',
     clubId: 'c1',
     studentName: 'Nusrat Jahan Faria',
-    clubName: 'SHKSC Cultural Club',
+    clubName: 'SHKSC Scout Group',
     amount: 2100,
     status: 'Paid',
     transactionId: 'TXN-SHKSC-002',
@@ -133,7 +133,7 @@ const initialPayments: Payment[] = [
     studentId: 'SHKSC-REG-2026-003',
     clubId: 'c2',
     studentName: 'Tahmid Hasan Siam',
-    clubName: 'SHKSC Debate Club',
+    clubName: 'SHKSC Art & Cultural Club',
     amount: 2100,
     status: 'Paid',
     transactionId: 'TXN-SHKSC-003',
@@ -145,7 +145,7 @@ const initialPayments: Payment[] = [
     studentId: 'SHKSC-REG-2026-004',
     clubId: 'c4',
     studentName: 'Sumaiya Akhter',
-    clubName: 'SHKSC English Club',
+    clubName: 'SHKSC Sports Club',
     amount: 2100,
     status: 'Paid',
     transactionId: 'TXN-SHKSC-004',
@@ -157,7 +157,7 @@ const initialPayments: Payment[] = [
     studentId: 'SHKSC-REG-2026-005',
     clubId: 'c5',
     studentName: 'Tanvir Ahmed Joy',
-    clubName: 'SHKSC IT Club',
+    clubName: 'SHKSC Photography Club',
     amount: 2100,
     status: 'Paid',
     transactionId: 'TXN-SHKSC-005',
@@ -169,7 +169,7 @@ const initialPayments: Payment[] = [
     studentId: 'SHKSC-REG-2026-007',
     clubId: 'c6',
     studentName: 'Jannatul Ferdous',
-    clubName: 'SHKSC Photography Club',
+    clubName: 'SHKSC Nutrition Club',
     amount: 2100,
     status: 'Paid',
     transactionId: 'TXN-SHKSC-007',
@@ -181,7 +181,7 @@ const initialPayments: Payment[] = [
     studentId: 'SHKSC-REG-2026-008',
     clubId: 'c1',
     studentName: 'Rakibul Islam',
-    clubName: 'SHKSC Cultural Club',
+    clubName: 'SHKSC Scout Group',
     amount: 2100,
     status: 'Paid',
     transactionId: 'TXN-SHKSC-008',
@@ -193,7 +193,7 @@ const initialPayments: Payment[] = [
     studentId: 'SHKSC-REG-2026-009',
     clubId: 'c7',
     studentName: 'Farzana Yesmin',
-    clubName: 'SHKSC Sports Club',
+    clubName: 'SHKSC English Language Club',
     amount: 2100,
     status: 'Paid',
     transactionId: 'TXN-SHKSC-009',
@@ -204,7 +204,26 @@ const initialPayments: Payment[] = [
 
 export const getPayments = (): Payment[] => {
   const saved = localStorage.getItem(PAYMENTS_STORAGE_KEY);
-  if (saved) return JSON.parse(saved);
+  if (saved) {
+    const payments: Payment[] = JSON.parse(saved);
+    const clubNames = new Map(getClubs().map(club => [club.id, club.name]));
+    const seedPaymentIds = new Set(initialPayments.map(payment => payment.id));
+    let changed = false;
+
+    payments.forEach(payment => {
+      const currentClubName = clubNames.get(payment.clubId);
+      if (seedPaymentIds.has(payment.id) && currentClubName && payment.clubName !== currentClubName) {
+        payment.clubName = currentClubName;
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      localStorage.setItem(PAYMENTS_STORAGE_KEY, JSON.stringify(payments));
+    }
+
+    return payments;
+  }
   
   localStorage.setItem(PAYMENTS_STORAGE_KEY, JSON.stringify(initialPayments));
   return initialPayments;

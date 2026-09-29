@@ -81,11 +81,11 @@ export function StudentPaymentPage() {
                 <div className="bg-accent-50 border border-accent-200 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
                     <p className="font-bold text-primary-950">Complete Payment</p>
-                    <p className="text-xs text-gray-600 mt-0.5">Pay securely through SSLCommerz.</p>
+                    <p className="text-xs text-gray-600 mt-0.5">Frontend demo simulation only — no real charge occurs.</p>
                   </div>
                   <Button onClick={handlePayNow} disabled={paying} className="bg-accent-500 hover:bg-accent-600 text-white gap-2 shrink-0">
                     {paying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
-                    {paying ? 'Processing...' : `Pay ${total.toLocaleString()} ৳`}
+                    {paying ? 'Simulating...' : `Simulate ${total.toLocaleString()} ৳`}
                   </Button>
                 </div>
               </div>

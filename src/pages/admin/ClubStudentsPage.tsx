@@ -330,7 +330,7 @@ export function ClubStudentsPage() {
                         : 'border-gray-200 text-gray-500 hover:border-gray-300'
                     }`}
                   >
-                    💳 Online (SSLCommerz)
+                    💳 Online (Demo Simulation)
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">

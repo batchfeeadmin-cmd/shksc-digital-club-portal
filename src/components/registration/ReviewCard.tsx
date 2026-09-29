@@ -46,11 +46,17 @@ export function ReviewCard({ formData, onNext, onEdit }: ReviewCardProps) {
             )}
             <div className="grid sm:grid-cols-2 gap-y-4 gap-x-8 text-sm flex-1">
               <div><span className="text-gray-500 block text-xs">Full Name</span><span className="font-medium">{formData.fullName}</span></div>
-              <div><span className="text-gray-500 block text-xs">Student ID</span><span className="font-medium">{formData.studentId}</span></div>
+              <div><span className="text-gray-500 block text-xs">School Student ID</span><span className="font-medium">{formData.schoolStudentId}</span></div>
+              <div><span className="text-gray-500 block text-xs">Registration Reference</span><span className="font-medium text-accent-600">Auto-generated on submission</span></div>
               <div><span className="text-gray-500 block text-xs">Class & Sec</span><span className="font-medium">Class {formData.class} {formData.section ? `- ${formData.section}` : ''}</span></div>
               <div><span className="text-gray-500 block text-xs">Roll Number</span><span className="font-medium">{formData.rollNumber || 'N/A'}</span></div>
               <div><span className="text-gray-500 block text-xs">Mobile</span><span className="font-medium">{formData.mobile}</span></div>
               <div><span className="text-gray-500 block text-xs">Email</span><span className="font-medium">{formData.email || 'N/A'}</span></div>
+              <div><span className="text-gray-500 block text-xs">Father's Name</span><span className="font-medium">{formData.fatherName || 'N/A'}</span></div>
+              <div><span className="text-gray-500 block text-xs">Mother's Name</span><span className="font-medium">{formData.motherName || 'N/A'}</span></div>
+              <div><span className="text-gray-500 block text-xs">Date of Birth</span><span className="font-medium">{formData.dob}</span></div>
+              <div><span className="text-gray-500 block text-xs">Gender</span><span className="font-medium">{formData.gender}</span></div>
+              <div className="sm:col-span-2"><span className="text-gray-500 block text-xs">Address</span><span className="font-medium">{formData.address || 'N/A'}</span></div>
             </div>
           </div>
         </div>

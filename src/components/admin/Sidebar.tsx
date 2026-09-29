@@ -8,6 +8,7 @@ import {
   UserCog, 
   CircleDollarSign, 
   CreditCard, 
+  ReceiptText,
   CheckSquare, 
   BarChart3,
   Activity,
@@ -16,6 +17,7 @@ import {
   Layout,
   Database,
   CalendarDays,
+  CalendarCheck,
   Mail
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -44,6 +46,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     { name: 'Club Admins', icon: <UserCog size={20} />, path: '/admin/root/club-admins', requiredPerm: 'students_clubs' },
     { name: 'Fee Management', icon: <CircleDollarSign size={20} />, path: '/admin/root/fee-management', requiredPerm: 'payments' },
     { name: 'Payments', icon: <CreditCard size={20} />, path: '/admin/root/payments', requiredPerm: 'payments' },
+    { name: 'Finance & Vouchers', icon: <ReceiptText size={20} />, path: '/admin/root/finance', requiredPerm: 'payments' },
+    { name: 'Batches & Attendance', icon: <CalendarCheck size={20} />, path: '/admin/root/batches', requiredPerm: 'students_clubs' },
     { name: 'Approval Requests', icon: <CheckSquare size={20} />, path: '/admin/root/approvals', requiredPerm: 'students_clubs' },
     { name: 'Reports', icon: <BarChart3 size={20} />, path: '/admin/root/reports', requiredPerm: 'reports' },
     { name: 'Communications', icon: <Mail size={20} />, path: '/admin/root/communications', requiredPerm: 'communications' },
@@ -85,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             <SchoolLogo className="w-8 h-8 bg-white rounded shadow-sm" />
             <span className="font-heading font-bold text-white text-lg tracking-wide hidden sm:block truncate">SHKSC Admin</span>
           </div>
-          <button onClick={() => setIsOpen(false)} className="lg:hidden text-primary-200 hover:text-white">
+          <button onClick={() => setIsOpen(false)} className="lg:hidden text-primary-200 hover:text-white" aria-label="Close admin navigation">
             <X size={24} />
           </button>
         </div>

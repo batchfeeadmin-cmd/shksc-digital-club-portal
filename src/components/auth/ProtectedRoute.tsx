@@ -5,9 +5,22 @@ import { Role } from '../../types';
 
 interface ProtectedRouteProps {
   allowedRoles?: Role[];
+  requiredPermission?: string;
+  requireRoot?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
+const getDashboardPath = (role: Role): string => {
+  if (role === 'root_admin' || role === 'sub_admin') return '/admin/root/dashboard';
+  if (role === 'club_admin') return '/admin/club/dashboard';
+  if (role === 'student') return '/student/dashboard';
+  return '/';
+};
+
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  allowedRoles,
+  requiredPermission,
+  requireRoot = false
+}) => {
   const { user } = useAuth();
 
   if (!user) {
@@ -15,18 +28,19 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) 
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // If it's a sub_admin trying to access root_admin, and root_admin is allowed, let them pass if they have permission
-    // Wait, since we are doing permission check in the sidebar and components, allowing sub_admin to access root_admin routes is fine.
-    // We just need to check if the role is allowed.
-    if (allowedRoles.includes('root_admin') && user.role === 'sub_admin') {
-      return <Outlet />;
-    }
+    return <Navigate to={getDashboardPath(user.role)} replace />;
+  }
 
-    // Otherwise redirect them to their dashboard
-    if (user.role === 'root_admin' || user.role === 'sub_admin') return <Navigate to="/admin/root/dashboard" replace />;
-    if (user.role === 'club_admin') return <Navigate to="/admin/club/dashboard" replace />;
-    if (user.role === 'student') return <Navigate to="/student/dashboard" replace />;
-    return <Navigate to="/" replace />;
+  if (requireRoot && user.role !== 'root_admin') {
+    return <Navigate to={getDashboardPath(user.role)} replace />;
+  }
+
+  if (
+    requiredPermission &&
+    user.role === 'sub_admin' &&
+    !user.permissions?.includes(requiredPermission)
+  ) {
+    return <Navigate to="/admin/root/dashboard" replace />;
   }
 
   return <Outlet />;
@@ -35,7 +49,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) 
 export const RoleGuard: React.FC<{ allowedRoles: Role[], children: React.ReactNode }> = ({ allowedRoles, children }) => {
   const { user } = useAuth();
   if (!user) return null;
-  if (allowedRoles.includes('root_admin') && user.role === 'sub_admin') return <>{children}</>;
   if (!allowedRoles.includes(user.role)) return null;
   return <>{children}</>;
 };

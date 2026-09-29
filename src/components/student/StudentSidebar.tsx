@@ -31,9 +31,11 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <button
+          type="button"
           className="fixed inset-0 bg-primary-950/50 backdrop-blur-sm z-40 lg:hidden animate-in fade-in"
           onClick={onClose}
+          aria-label="Close student navigation"
         />
       )}
       
@@ -43,7 +45,7 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
             <h2 className="text-xl font-heading font-bold text-white tracking-wide">SHKSC Portal</h2>
             <p className="text-xs text-primary-300 mt-1 uppercase tracking-wider font-semibold">Student Dashboard</p>
           </div>
-          <button onClick={onClose} className="lg:hidden text-primary-300 hover:text-white p-1">
+          <button onClick={onClose} className="lg:hidden text-primary-300 hover:text-white p-1" aria-label="Close student navigation">
             <X size={24} />
           </button>
         </div>

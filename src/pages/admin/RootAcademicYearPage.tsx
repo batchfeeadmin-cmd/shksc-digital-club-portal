@@ -140,7 +140,7 @@ export function RootAcademicYearPage() {
             <div className="p-4 border border-gray-100 rounded-xl flex items-center justify-between">
               <div>
                 <p className="font-bold text-gray-900 mb-1">Clear Payment Logs</p>
-                <p className="text-xs text-gray-500">Deletes all SSLCommerz & Cash transaction history.</p>
+                <p className="text-xs text-gray-500">Deletes all online demo and cash transaction history.</p>
                 <p className="text-sm font-medium text-gray-600 mt-2 flex items-center gap-1.5">
                   <CreditCard size={14}/> {payments.length} total logs
                 </p>
