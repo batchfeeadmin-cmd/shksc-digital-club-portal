@@ -292,8 +292,8 @@ export function ClubStudentsPage() {
                   <input type="text" value={admissionForm.section} onChange={e => setAdmissionForm({ ...admissionForm, section: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Roll</label>
-                  <input type="text" value={admissionForm.roll} onChange={e => setAdmissionForm({ ...admissionForm, roll: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" />
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Student Roll *</label>
+                  <input type="text" value={admissionForm.roll} onChange={e => setAdmissionForm({ ...admissionForm, roll: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" required />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">

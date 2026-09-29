@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { ImageCropper } from '../ui/ImageCropper';
-import { findMasterStudent, getMasterStudents } from '../../services/students/masterStudentService';
 import { getUserByEmail } from '../../services/auth/userService';
-import { getStudentByEmail, getStudents } from '../../services/students/studentService';
+import { getStudentByEmail } from '../../services/students/studentService';
 import { AlertCircle, BadgeCheck, LockKeyhole } from 'lucide-react';
 
 interface PersonalInfoFormProps {
@@ -13,15 +12,10 @@ interface PersonalInfoFormProps {
 }
 
 export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoFormProps) {
-  const [verificationError, setVerificationError] = useState('');
   const [accountError, setAccountError] = useState('');
-  const strictVerification = getMasterStudents().length > 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     updateData({ [e.target.name]: e.target.value });
-    if (e.target.name === 'schoolStudentId') {
-      setVerificationError('');
-    }
     if (['email', 'password', 'confirmPassword'].includes(e.target.name)) {
       setAccountError('');
     }
@@ -50,35 +44,7 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
       return;
     }
 
-    if (strictVerification) {
-      const matchedStudent = findMasterStudent(formData.schoolStudentId);
-
-      if (!matchedStudent) {
-        setVerificationError(
-          `Student ID "${formData.schoolStudentId.trim()}" was not found in the official school database.`
-        );
-        return;
-      }
-
-      const alreadyRegistered = getStudents().some(student =>
-        student.schoolStudentId?.trim().toUpperCase() === matchedStudent.studentId.trim().toUpperCase()
-      );
-      if (alreadyRegistered) {
-        setVerificationError('This official Student ID already has a club registration.');
-        return;
-      }
-
-      updateData({
-        schoolStudentId: matchedStudent.studentId,
-        fullName: matchedStudent.name,
-        class: matchedStudent.class,
-        rollNumber: matchedStudent.roll,
-        section: matchedStudent.section || ''
-      });
-    }
-
     updateData({ email: normalizedEmail });
-    setVerificationError('');
     setAccountError('');
     onNext();
   };
@@ -87,31 +53,17 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
       <h3 className="text-xl font-heading font-bold text-primary-950 mb-6 pb-4 border-b border-gray-100">Student Information</h3>
 
-      <div className={`rounded-xl border p-4 ${strictVerification ? 'border-primary-100 bg-primary-50' : 'border-amber-200 bg-amber-50'}`}>
+      <div className="rounded-xl border border-primary-100 bg-primary-50 p-4">
         <div className="flex items-start gap-3">
           <BadgeCheck className="w-5 h-5 text-primary-600 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm font-bold text-primary-950">
-              {strictVerification ? 'Official student verification' : 'Manual registration mode'}
-            </p>
-            <p className={`text-xs mt-1 ${strictVerification ? 'text-primary-700' : 'text-amber-700'}`}>
-              {strictVerification
-                ? 'Enter your school-issued Student ID. For this demo, try SHKSC-2026-004.'
-                : 'The master database is empty, so a School Student ID is optional and details can be entered manually.'}
+            <p className="text-sm font-bold text-primary-950">Student ID is generated automatically</p>
+            <p className="text-xs mt-1 text-primary-700">
+              Complete your admission information below. After submission, the portal will create your unique Student ID automatically.
             </p>
           </div>
         </div>
       </div>
-
-      {verificationError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 flex items-start gap-3" role="alert">
-          <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
-          <div>
-            <p className="text-sm font-bold">Student verification failed</p>
-            <p className="text-sm mt-1">{verificationError}</p>
-          </div>
-        </div>
-      )}
 
       {accountError && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 flex items-start gap-3" role="alert">
@@ -132,23 +84,6 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
       </div>
       
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="md:col-span-2">
-          <label htmlFor="schoolStudentId" className="block text-sm font-semibold text-gray-700 mb-2">
-            School Student ID {strictVerification ? '*' : '(optional)'}
-          </label>
-          <input
-            required={strictVerification}
-            id="schoolStudentId"
-            type="text"
-            name="schoolStudentId"
-            value={formData.schoolStudentId}
-            onChange={handleChange}
-            autoComplete="off"
-            placeholder="e.g. SHKSC-2026-001"
-            className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all uppercase"
-          />
-        </div>
-
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
           <input required type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
@@ -190,8 +125,8 @@ export function PersonalInfoForm({ formData, updateData, onNext }: PersonalInfoF
             <input type="text" name="section" value={formData.section} onChange={handleChange} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Roll No</label>
-            <input type="text" name="rollNumber" value={formData.rollNumber} onChange={handleChange} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Student Roll *</label>
+            <input required type="text" name="rollNumber" value={formData.rollNumber} onChange={handleChange} placeholder="e.g. 12" className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all" />
           </div>
         </div>
 

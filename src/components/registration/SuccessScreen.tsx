@@ -97,8 +97,12 @@ export function SuccessScreen({ formData, submittedStudent }: SuccessScreenProps
 
       <div className="bg-surface-sec p-6 rounded-xl border border-gray-200 mb-6 inline-block text-left w-full sm:w-auto min-w-[300px]">
         <div className="mb-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Registration Reference ID</p>
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Student ID (Auto-generated)</p>
           <p className="font-mono font-bold text-lg text-primary-900">{submittedStudent.studentId}</p>
+        </div>
+        <div className="mb-4">
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Student Roll</p>
+          <p className="font-semibold text-primary-900">{submittedStudent.roll || '—'}</p>
         </div>
         <div>
           <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Current Status</p>

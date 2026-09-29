@@ -30,7 +30,6 @@ export function RegistrationPage() {
     class: '',
     section: '',
     rollNumber: '',
-    schoolStudentId: '',
     mobile: '',
     email: '',
     password: '',
@@ -52,7 +51,6 @@ export function RegistrationPage() {
     const student = addStudent({
       id: `stu-${Date.now()}`,
       studentId: '',
-      schoolStudentId: formData.schoolStudentId.trim().toUpperCase() || undefined,
       name: formData.fullName,
       fatherName: formData.fatherName,
       motherName: formData.motherName,
