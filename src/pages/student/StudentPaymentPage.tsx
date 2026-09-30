@@ -3,11 +3,12 @@ import { StudentLayout } from '../../components/student/StudentLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useClubsData } from '../../hooks/useAdminData';
 import { getStudentByEmail } from '../../services/students/studentService';
-import { getClubFees, confirmPayment } from '../../services/payments/paymentService';
+import { getClubFees, confirmPayment, getPaymentByTransactionId } from '../../services/payments/paymentService';
 import { createPaymentSession, validatePayment, generateTranId } from '../../services/payments/sslCommerzService';
 import { FeeSummary } from '../../components/student/StudentCards';
 import { CreditCard, Loader2, History, CheckCircle2 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import { getApprovedDiscountForStudent } from '../../services/discounts/discountService';
 
 export function StudentPaymentPage() {
   const { user } = useAuth();
@@ -18,8 +19,11 @@ export function StudentPaymentPage() {
   const fees = student ? getClubFees()[student.clubId] : undefined;
   const regFee = fees?.registrationFee ?? 0;
   const affilCost = fees?.affiliationCost ?? 0;
-  const total = regFee + affilCost;
+  const originalTotal = regFee + affilCost;
+  const approvedDiscount = student ? getApprovedDiscountForStudent(student.studentId, student.clubId) : undefined;
   const isPaid = student?.registrationStatus === 'Confirmed';
+  const currentPayment = student?.receiptTxnId ? getPaymentByTransactionId(student.receiptTxnId) : undefined;
+  const total = isPaid ? (currentPayment?.amount ?? originalTotal) : (approvedDiscount?.finalAmount ?? originalTotal);
   
   const [paying, setPaying] = useState(false);
   const [, setRefresh] = useState(0);
@@ -76,7 +80,7 @@ export function StudentPaymentPage() {
               </div>
             ) : (
               <div className="space-y-6">
-                <FeeSummary regFee={regFee} affilCost={affilCost} total={total} status="Pending" />
+                <FeeSummary regFee={regFee} affilCost={affilCost} total={total} status="Pending" discountAmount={approvedDiscount?.discountAmount} discountReason={approvedDiscount?.reason} />
                 
                 <div className="bg-accent-50 border border-accent-200 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>

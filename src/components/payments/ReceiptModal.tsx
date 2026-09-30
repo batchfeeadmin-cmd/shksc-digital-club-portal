@@ -14,6 +14,9 @@ export interface ReceiptData {
   profilePicture?: string;
   regFee: number;
   affilCost: number;
+  originalTotal?: number;
+  discountAmount?: number;
+  discountReason?: string;
   total: number;
   txnId: string;
   method: string;
@@ -153,6 +156,15 @@ function ReceiptCopy({ receipt, copyLabel, paid }: ReceiptCopyProps) {
               <td className="px-4 py-3 text-gray-700">Club Affiliation Cost</td>
               <td className="px-4 py-3 text-right font-medium text-gray-900 tabular-nums">{receipt.affilCost.toLocaleString()} ৳</td>
             </tr>
+            {!!receipt.discountAmount && receipt.discountAmount > 0 && (
+              <tr className="border-b border-green-100 bg-green-50">
+                <td className="px-4 py-3 text-green-800">
+                  Approved Student Discount
+                  {receipt.discountReason && <span className="block text-xs font-normal text-green-600">{receipt.discountReason}</span>}
+                </td>
+                <td className="px-4 py-3 text-right font-bold text-green-700 tabular-nums">- {receipt.discountAmount.toLocaleString()} BDT</td>
+              </tr>
+            )}
             <tr className="bg-accent-50">
               <td className="px-4 py-4 font-extrabold text-primary-950">Total Paid</td>
               <td className="px-4 py-4 text-right font-extrabold text-accent-600 text-lg tabular-nums">{receipt.total.toLocaleString()} ৳</td>

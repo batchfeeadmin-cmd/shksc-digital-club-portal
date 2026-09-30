@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AdminLayout } from '../../components/admin/AdminLayout';
+import { ClubAdminLayout } from '../../components/admin/ClubAdminLayout';
 import { Users, Plus, Shield, Trash2, Search, CheckCircle2 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { useAuth } from '../../context/AuthContext';
@@ -66,8 +66,8 @@ export function ClubCommitteePage() {
   };
 
   return (
-    <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
+    <ClubAdminLayout>
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center mb-8">
         <div>
           <h2 className="text-2xl font-heading font-bold text-primary-950 mb-1">Committee Members</h2>
           <p className="text-sm text-gray-500">Assign leadership roles to your club members.</p>
@@ -199,6 +199,6 @@ export function ClubCommitteePage() {
           })
         )}
       </div>
-    </AdminLayout>
+    </ClubAdminLayout>
   );
 }

@@ -11,9 +11,10 @@ interface DataTableProps {
   columns: Column[];
   data: any[];
   action?: React.ReactNode;
+  emptyMessage?: string;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ title, columns, data, action }) => {
+export const DataTable: React.FC<DataTableProps> = ({ title, columns, data, action, emptyMessage = 'No data available.' }) => {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col w-full">
       <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white/50">
@@ -44,7 +45,7 @@ export const DataTable: React.FC<DataTableProps> = ({ title, columns, data, acti
       </div>
       {data.length === 0 && (
         <div className="p-8 text-center text-gray-500 text-sm">
-          No data available.
+          {emptyMessage}
         </div>
       )}
     </div>

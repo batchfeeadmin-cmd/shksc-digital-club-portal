@@ -17,15 +17,16 @@ export function StudentReceiptPage() {
   const fees = student ? getClubFees()[student.clubId] : undefined;
   const regFee = fees?.registrationFee ?? 0;
   const affilCost = fees?.affiliationCost ?? 0;
-  const total = regFee + affilCost;
+  const originalTotal = regFee + affilCost;
   const isPaid = student?.registrationStatus === 'Confirmed';
+  const payment = student?.receiptTxnId ? getPaymentByTransactionId(student.receiptTxnId) : undefined;
 
   const [receiptOpen, setReceiptOpen] = useState(false);
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
 
   const openReceipt = () => {
     if (!student || !club) return;
-    const payment = student.receiptTxnId ? getPaymentByTransactionId(student.receiptTxnId) : undefined;
+    const total = payment?.amount ?? originalTotal;
     setReceipt({
       receiptNo: student.receiptTxnId || student.studentId,
       date: new Date().toISOString(),
@@ -37,6 +38,9 @@ export function StudentReceiptPage() {
       profilePicture: student.profilePicture,
       regFee,
       affilCost,
+      originalTotal: payment?.originalAmount ?? originalTotal,
+      discountAmount: payment?.discountAmount,
+      discountReason: payment?.discountReason,
       total,
       txnId: student.receiptTxnId || '—',
       method: payment?.method || 'Online',
@@ -59,7 +63,9 @@ export function StudentReceiptPage() {
             clubName={club?.name || ''} 
             regFee={regFee} 
             affilCost={affilCost} 
-            total={total} 
+            total={payment?.amount ?? originalTotal}
+            discountAmount={payment?.discountAmount}
+            discountReason={payment?.discountReason}
             txnId={student?.receiptTxnId || ''}
             onDownload={openReceipt}
           />

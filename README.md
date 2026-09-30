@@ -23,7 +23,7 @@ The app currently uses localStorage-backed demo services. It is suitable for a s
 
 ## Registration demo
 
-When the master student database contains records, registration verifies the official school ID and fills the student's name, class, roll, and section. The seeded IDs include `SHKSC-2026-001` through `SHKSC-2026-005`; the first seeded student is already registered, so use `SHKSC-2026-004` for a fresh walkthrough.
+Registration collects the student's school roll and generates a unique portal Student ID automatically on admission. Manual Student ID entry and public master-database verification are not part of the current flow.
 
 The payment step is explicitly simulated. No gateway credentials or real charge are used in the browser. A backend implementation should create and verify payment sessions server-side, hash passwords, validate webhooks, and persist records in a real database before launch.
 
@@ -35,6 +35,7 @@ The payment step is explicitly simulated. No gateway credentials or real charge 
 - Student portal: profile, registration, club, payment, receipt, and notices
 - Finance workflow: monthly honorarium requests, separate club expenses, Root Admin approval, printable vouchers, recipient signatures, and expense-proof follow-up
 - Batch workflow: club-specific class/batch requests, day/time and instructor assignment, Root Admin approval, daily present/absent/late attendance, and cross-club reporting
+- Discount workflow: Club Admin requests fixed, percentage, or full-waiver discounts; Root Admin manages editable reasons and approvals; payment records and receipts retain the full discount audit trail
 
 ## Backend handoff roadmap
 

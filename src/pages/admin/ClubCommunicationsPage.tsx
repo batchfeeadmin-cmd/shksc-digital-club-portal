@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AdminLayout } from '../../components/admin/AdminLayout';
+import { ClubAdminLayout } from '../../components/admin/ClubAdminLayout';
 import { Mail, MessageSquare, BellRing, Send, CheckCircle2 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { useAuth } from '../../context/AuthContext';
@@ -7,7 +7,7 @@ import {
   getCommunications, 
   sendCommunication, 
   CommunicationChannel, 
-  CommunicationAudience, 
+  CommunicationAudience,
   CommunicationMessage 
 } from '../../services/communication/communicationService';
 import { useClubsData } from '../../hooks/useAdminData';
@@ -23,7 +23,7 @@ export function ClubCommunicationsPage() {
   // Club Admin can only send to their own club members
   // We will map 'All Students' internally to 'Club Members' in the message text for clarity,
   // but for the sake of the system, we can just use a specific string like 'My Club Members'
-  const audience = `Club Members (${club?.name || 'My Club'})` as any;
+  const audience: CommunicationAudience = `Club Members (${club?.name || 'My Club'})`;
 
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
@@ -33,7 +33,7 @@ export function ClubCommunicationsPage() {
     const handleUpdate = () => {
       // Filter communications sent by this club admin or to this club's audience
       const allMsgs = getCommunications();
-      const myMsgs = allMsgs.filter(m => m.sender === (user?.name || 'Club Admin') || m.audience === audience);
+      const myMsgs = allMsgs.filter(message => message.clubId === user?.clubId || message.audience === audience);
       setMessages(myMsgs);
     };
     handleUpdate();
@@ -43,9 +43,10 @@ export function ClubCommunicationsPage() {
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subject.trim() || !body.trim() || !club) return;
+    if ((channel !== 'SMS' && !subject.trim()) || !body.trim() || !club) return;
 
-    sendCommunication(channel, audience, subject, body, user?.name || 'Club Admin');
+    const resolvedSubject = channel === 'SMS' ? subject.trim() || 'SMS Update' : subject.trim();
+    sendCommunication(channel, audience, resolvedSubject, body.trim(), user?.name || 'Club Admin', club.id);
     
     setSuccessMsg(`${channel} successfully sent to ${audience}.`);
     setTimeout(() => setSuccessMsg(''), 4000);
@@ -54,7 +55,7 @@ export function ClubCommunicationsPage() {
   };
 
   return (
-    <AdminLayout>
+    <ClubAdminLayout>
       <div className="mb-8">
         <h2 className="text-2xl font-heading font-bold text-primary-950 mb-1">Communications</h2>
         <p className="text-sm text-gray-500">Send bulk emails, SMS, and dashboard alerts to your club members.</p>
@@ -72,20 +73,20 @@ export function ClubCommunicationsPage() {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Delivery Channel</label>
                 <div className="grid grid-cols-1 gap-2">
                   <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors ${channel === 'System Alert' ? 'bg-primary-50 border-primary-500 text-primary-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-                    <input type="radio" name="channel" value="System Alert" checked={channel === 'System Alert'} onChange={(e) => setChannel(e.target.value as any)} className="hidden" />
+                    <input type="radio" name="channel" value="System Alert" checked={channel === 'System Alert'} onChange={(e) => setChannel(e.target.value as CommunicationChannel)} className="hidden" />
                     <BellRing size={18} /> <span className="font-medium text-sm">System Alert (Dashboard)</span>
                   </label>
                   <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors ${channel === 'Email' ? 'bg-primary-50 border-primary-500 text-primary-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-                    <input type="radio" name="channel" value="Email" checked={channel === 'Email'} onChange={(e) => setChannel(e.target.value as any)} className="hidden" />
+                    <input type="radio" name="channel" value="Email" checked={channel === 'Email'} onChange={(e) => setChannel(e.target.value as CommunicationChannel)} className="hidden" />
                     <Mail size={18} /> <span className="font-medium text-sm">Email</span>
                   </label>
                   <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors ${channel === 'SMS' ? 'bg-primary-50 border-primary-500 text-primary-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-                    <input type="radio" name="channel" value="SMS" checked={channel === 'SMS'} onChange={(e) => setChannel(e.target.value as any)} className="hidden" />
+                    <input type="radio" name="channel" value="SMS" checked={channel === 'SMS'} onChange={(e) => setChannel(e.target.value as CommunicationChannel)} className="hidden" />
                     <MessageSquare size={18} /> <span className="font-medium text-sm">SMS (Mobile)</span>
                   </label>
                 </div>
@@ -123,7 +124,7 @@ export function ClubCommunicationsPage() {
                   onChange={(e) => setBody(e.target.value)}
                   required
                 ></textarea>
-                <div className="flex justify-between items-center mt-2">
+                <div className="flex flex-wrap justify-between gap-2 items-center mt-2">
                   <span className="text-xs text-gray-400">{body.length} characters</span>
                   {channel === 'SMS' && body.length > 160 && (
                     <span className="text-xs text-red-500 font-bold">Message exceeds 160 chars (multiple SMS will be charged).</span>
@@ -167,7 +168,7 @@ export function ClubCommunicationsPage() {
                     <p className="font-bold text-gray-900 text-sm mb-1">{msg.subject || 'No Subject'}</p>
                     <p className="text-xs text-gray-600 line-clamp-2 mb-3">{msg.body}</p>
                     
-                    <div className="pt-3 border-t border-gray-200/60 flex justify-between items-center text-xs text-gray-500">
+                    <div className="pt-3 border-t border-gray-200/60 flex flex-wrap justify-between gap-2 items-center text-xs text-gray-500">
                       <span>To: <strong>{msg.audience}</strong></span>
                       <span>By: {msg.sender}</span>
                     </div>
@@ -178,6 +179,6 @@ export function ClubCommunicationsPage() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </ClubAdminLayout>
   );
 }

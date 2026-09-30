@@ -110,10 +110,44 @@ export interface Payment {
   studentName?: string;
   clubName?: string;
   amount: number;
+  originalAmount?: number;
+  discountAmount?: number;
+  discountReason?: string;
+  discountId?: string;
   status: 'Paid' | 'Pending' | 'Failed';
   transactionId?: string;
   method?: string;
   date: string;
+}
+
+export type DiscountType = 'Fixed Amount' | 'Percentage' | 'Full Waiver';
+export type DiscountStatus = 'Pending' | 'Approved' | 'Rejected' | 'Used';
+
+export interface StudentDiscount {
+  id: string;
+  studentRecordId: string;
+  studentId: string;
+  studentName: string;
+  studentRoll: string;
+  className: string;
+  clubId: string;
+  clubName: string;
+  originalAmount: number;
+  discountType: DiscountType;
+  discountValue: number;
+  discountAmount: number;
+  finalAmount: number;
+  reason: string;
+  reasonDetails?: string;
+  status: DiscountStatus;
+  requestedBy: string;
+  requestedAt: string;
+  updatedAt?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewNote?: string;
+  usedAt?: string;
+  paymentTransactionId?: string;
 }
 
 export interface Fee {

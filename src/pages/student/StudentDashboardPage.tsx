@@ -19,6 +19,7 @@ import { getEventsByClub, rsvpForEvent, cancelRsvp } from '../../services/events
 import { ReceiptModal, ReceiptData } from '../../components/payments/ReceiptModal';
 import { Button } from '../../components/ui/button';
 import { Bell, Loader2, CreditCard, CalendarDays, MapPin, Users, Check } from 'lucide-react';
+import { getApprovedDiscountForStudent } from '../../services/discounts/discountService';
 
 export function StudentDashboardPage() {
   const { user } = useAuth();
@@ -35,8 +36,13 @@ export function StudentDashboardPage() {
 
   const regFee = fees?.registrationFee ?? 0;
   const affilCost = fees?.affiliationCost ?? 0;
-  const total = regFee + affilCost;
+  const originalTotal = regFee + affilCost;
+  const approvedDiscount = student ? getApprovedDiscountForStudent(student.studentId, student.clubId) : undefined;
   const paid = student?.registrationStatus === 'Confirmed';
+  const currentPayment = student?.receiptTxnId ? getPaymentByTransactionId(student.receiptTxnId) : undefined;
+  const total = paid ? (currentPayment?.amount ?? originalTotal) : (approvedDiscount?.finalAmount ?? originalTotal);
+  const activeDiscountAmount = paid ? currentPayment?.discountAmount : approvedDiscount?.discountAmount;
+  const activeDiscountReason = paid ? currentPayment?.discountReason : approvedDiscount?.reason;
 
   const openReceipt = () => {
     if (!student || !club) return;
@@ -51,7 +57,10 @@ export function StudentDashboardPage() {
       clubLogo: club.logo,
       regFee,
       affilCost,
-      total,
+      originalTotal: payment?.originalAmount ?? originalTotal,
+      discountAmount: payment?.discountAmount,
+      discountReason: payment?.discountReason,
+      total: payment?.amount ?? total,
       txnId: student.receiptTxnId || '—',
       method: payment?.method || 'Online',
       status: 'Paid'
@@ -91,6 +100,9 @@ export function StudentDashboardPage() {
           profilePicture: student.profilePicture,
           regFee,
           affilCost,
+          originalTotal,
+          discountAmount: approvedDiscount?.discountAmount,
+          discountReason: approvedDiscount ? [approvedDiscount.reason, approvedDiscount.reasonDetails].filter(Boolean).join(' — ') : undefined,
           total,
           txnId: tranId,
           method: validation.method,
@@ -128,7 +140,10 @@ export function StudentDashboardPage() {
     description: notice.message
   }));
 
-  const alerts = getSystemAlertsForStudent(student?.registrationStatus === 'Confirmed' ? 'Confirmed' : 'Pending');
+  const alerts = getSystemAlertsForStudent(
+    student?.registrationStatus === 'Confirmed' ? 'Confirmed' : 'Pending',
+    student?.clubId
+  );
 
   return (
     <StudentLayout>
@@ -162,7 +177,7 @@ export function StudentDashboardPage() {
           
           <div className="grid sm:grid-cols-2 gap-6 items-stretch">
             <RegistrationCard clubName={club?.name || 'No club selected'} status={paid ? 'Confirmed' : 'Pending Payment'} />
-            <FeeSummary regFee={regFee} affilCost={affilCost} total={total} status={paid ? 'Paid' : 'Pending'} />
+            <FeeSummary regFee={regFee} affilCost={affilCost} total={total} status={paid ? 'Paid' : 'Pending'} discountAmount={activeDiscountAmount} discountReason={activeDiscountReason} />
           </div>
 
           {!paid && (
@@ -256,6 +271,8 @@ export function StudentDashboardPage() {
                 regFee={regFee} 
                 affilCost={affilCost} 
                 total={total} 
+                discountAmount={activeDiscountAmount}
+                discountReason={activeDiscountReason}
                 txnId={student?.receiptTxnId || ''}
                 onDownload={openReceipt}
               />

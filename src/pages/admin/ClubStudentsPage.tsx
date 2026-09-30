@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ClubAdminLayout } from '../../components/admin/ClubAdminLayout';
 import { DataTable } from '../../components/admin/DataTable';
 import { Button } from '../../components/ui/button';
-import { Users, Pencil, UserPlus, X, CheckCircle2, Download } from 'lucide-react';
+import { Users, Pencil, UserPlus, X, CheckCircle2, Download, Search, Clock3, RotateCcw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useClubsData, useClubFees } from '../../hooks/useAdminData';
 import { getStudents, addStudent, updateStudent } from '../../services/students/studentService';
 import { confirmPayment } from '../../services/payments/paymentService';
-import { generateTranId } from '../../services/payments/sslCommerzService';
 import { logActivity } from '../../services/activity/activityService';
 import type { Student } from '../../types';
 import { exportToCSV } from '../../utils/exportUtils';
@@ -42,8 +42,11 @@ const emptyAdmissionForm: AdmissionForm = {
   paymentMethod: 'Cash'
 };
 
+type StudentStatusFilter = 'All' | Student['registrationStatus'];
+
 export function ClubStudentsPage() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { clubs } = useClubsData();
   const { fees } = useClubFees();
   const [students, setStudents] = useState<Student[]>(getStudents());
@@ -55,6 +58,9 @@ export function ClubStudentsPage() {
   const [admissionOpen, setAdmissionOpen] = useState(false);
   const [admissionForm, setAdmissionForm] = useState<AdmissionForm>(emptyAdmissionForm);
   const [successMsg, setSuccessMsg] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StudentStatusFilter>('All');
+  const [classFilter, setClassFilter] = useState('All');
 
   useEffect(() => {
     const handleUpdate = () => setStudents(getStudents());
@@ -62,7 +68,34 @@ export function ClubStudentsPage() {
     return () => window.removeEventListener('shksc_state_changed', handleUpdate);
   }, []);
 
+  useEffect(() => {
+    if (searchParams.get('action') === 'admit') {
+      setAdmissionOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const clubStudents = students.filter(s => s.clubId === user?.clubId);
+  const confirmedCount = clubStudents.filter(student => student.registrationStatus === 'Confirmed').length;
+  const pendingCount = clubStudents.filter(student => student.registrationStatus === 'Pending Payment').length;
+  const classOptions = Array.from(new Set(clubStudents.map(student => student.class).filter(Boolean)))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredStudents = clubStudents.filter(student => {
+    const matchesStatus = statusFilter === 'All' || student.registrationStatus === statusFilter;
+    const matchesClass = classFilter === 'All' || student.class === classFilter;
+    const searchableText = [
+      student.studentId,
+      student.name,
+      student.class,
+      student.section,
+      student.roll,
+      student.mobile,
+      student.email
+    ].filter(Boolean).join(' ').toLowerCase();
+    return matchesStatus && matchesClass && (!normalizedSearch || searchableText.includes(normalizedSearch));
+  });
+  const hasActiveFilters = Boolean(normalizedSearch) || statusFilter !== 'All' || classFilter !== 'All';
   const fee = user?.clubId ? fees[user.clubId] : undefined;
   const feeTotal = (fee?.registrationFee ?? 0) + (fee?.affiliationCost ?? 0);
 
@@ -112,6 +145,7 @@ export function ClubStudentsPage() {
       studentId: '',
       name: admissionForm.name,
       class: admissionForm.class,
+      section: admissionForm.section,
       roll: admissionForm.roll,
       mobile: admissionForm.mobile,
       email: admissionForm.email,
@@ -152,7 +186,7 @@ export function ClubStudentsPage() {
     flashSuccess('Student admitted ✓');
   };
 
-  const rows = clubStudents.map(s => ({
+  const rows = filteredStudents.map(s => ({
     id: s.studentId || s.id,
     name: s.name,
     class: `Class ${s.class}${s.roll ? ` - ${s.roll}` : ''}`,
@@ -194,6 +228,12 @@ export function ClubStudentsPage() {
     }
   ];
 
+  const resetFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('All');
+    setClassFilter('All');
+  };
+
   return (
     <ClubAdminLayout>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
@@ -201,18 +241,108 @@ export function ClubStudentsPage() {
           <h2 className="text-2xl font-heading font-bold text-primary-950 mb-1">Students</h2>
           <p className="text-sm text-gray-500">{club?.name || 'Your club'} — view, edit or admit students.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => exportToCSV('club_students.csv', rows.map(({_student, ...rest}) => rest))}>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
+          <Button
+            variant="outline"
+            disabled={rows.length === 0}
+            onClick={() => exportToCSV('club_students.csv', rows.map(({_student, ...rest}) => rest))}
+          >
             <Download className="w-4 h-4 mr-2" />
-            Export CSV
+            Export {hasActiveFilters ? 'Results' : 'CSV'}
           </Button>
-          <div className="bg-primary-50 text-primary-700 px-4 py-2 rounded-xl flex items-center gap-2 border border-primary-100 font-medium">
-            <Users size={18} /> {clubStudents.length} Students
-          </div>
+          <div className="flex-1 md:hidden" />
           <Button onClick={() => setAdmissionOpen(true)} className="bg-accent-500 hover:bg-accent-600 text-white gap-2">
-            <UserPlus size={16} /> Register Student
+            <UserPlus size={16} /> Admit Student
           </Button>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5" aria-label="Student payment status filter">
+        <button
+          type="button"
+          onClick={() => setStatusFilter('All')}
+          aria-pressed={statusFilter === 'All'}
+          className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+            statusFilter === 'All' ? 'border-primary-300 bg-primary-50 ring-2 ring-primary-100' : 'border-gray-100 bg-white hover:border-primary-200'
+          }`}
+        >
+          <span className="w-10 h-10 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center"><Users size={19} /></span>
+          <span>
+            <span className="block text-2xl font-heading font-bold text-primary-950">{clubStudents.length}</span>
+            <span className="block text-xs font-semibold text-gray-500">All Students</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setStatusFilter('Confirmed')}
+          aria-pressed={statusFilter === 'Confirmed'}
+          className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+            statusFilter === 'Confirmed' ? 'border-emerald-300 bg-emerald-50 ring-2 ring-emerald-100' : 'border-gray-100 bg-white hover:border-emerald-200'
+          }`}
+        >
+          <span className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center"><CheckCircle2 size={19} /></span>
+          <span>
+            <span className="block text-2xl font-heading font-bold text-primary-950">{confirmedCount}</span>
+            <span className="block text-xs font-semibold text-gray-500">Paid & Active</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setStatusFilter('Pending Payment')}
+          aria-pressed={statusFilter === 'Pending Payment'}
+          className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+            statusFilter === 'Pending Payment' ? 'border-amber-300 bg-amber-50 ring-2 ring-amber-100' : 'border-gray-100 bg-white hover:border-amber-200'
+          }`}
+        >
+          <span className="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center"><Clock3 size={19} /></span>
+          <span>
+            <span className="block text-2xl font-heading font-bold text-primary-950">{pendingCount}</span>
+            <span className="block text-xs font-semibold text-gray-500">Payment Due</span>
+          </span>
+        </button>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-5">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+          <div className="relative flex-1">
+            <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={event => setSearchTerm(event.target.value)}
+              placeholder="Search name, ID, roll, mobile or email..."
+              aria-label="Search students"
+              className="w-full h-11 pl-10 pr-10 rounded-xl border border-gray-200 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700"
+                aria-label="Clear student search"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+          <select
+            value={classFilter}
+            onChange={event => setClassFilter(event.target.value)}
+            aria-label="Filter students by class"
+            className="h-11 min-w-44 px-3 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+          >
+            <option value="All">All Classes</option>
+            {classOptions.map(className => <option key={className} value={className}>Class {className}</option>)}
+          </select>
+          {hasActiveFilters && (
+            <Button type="button" variant="ghost" onClick={resetFilters} className="gap-2 text-gray-600">
+              <RotateCcw size={15} /> Reset
+            </Button>
+          )}
+        </div>
+        <p className="text-xs text-gray-500 mt-3">
+          Showing <span className="font-bold text-primary-900">{filteredStudents.length}</span> of {clubStudents.length} students
+        </p>
       </div>
 
       {successMsg && (
@@ -222,7 +352,12 @@ export function ClubStudentsPage() {
       )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <DataTable title="Club Members" columns={columns} data={rows} />
+        <DataTable
+          title="Club Members"
+          columns={columns}
+          data={rows}
+          emptyMessage={hasActiveFilters ? 'No students match these filters. Clear or change the search options.' : 'No students have joined this club yet.'}
+        />
       </div>
 
       {/* Edit modal */}
@@ -238,7 +373,7 @@ export function ClubStudentsPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Full Name *</label>
                 <input type="text" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" required />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Class *</label>
                   <input type="text" value={editForm.class} onChange={e => setEditForm({ ...editForm, class: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" required />
@@ -248,7 +383,7 @@ export function ClubStudentsPage() {
                   <input type="text" value={editForm.roll} onChange={e => setEditForm({ ...editForm, roll: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Mobile</label>
                   <input type="text" value={editForm.mobile} onChange={e => setEditForm({ ...editForm, mobile: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" />
@@ -282,7 +417,7 @@ export function ClubStudentsPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Full Name *</label>
                 <input type="text" value={admissionForm.name} onChange={e => setAdmissionForm({ ...admissionForm, name: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" required />
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Class *</label>
                   <input type="text" value={admissionForm.class} onChange={e => setAdmissionForm({ ...admissionForm, class: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" required />
@@ -296,7 +431,7 @@ export function ClubStudentsPage() {
                   <input type="text" value={admissionForm.roll} onChange={e => setAdmissionForm({ ...admissionForm, roll: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" required />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Mobile *</label>
                   <input type="text" value={admissionForm.mobile} onChange={e => setAdmissionForm({ ...admissionForm, mobile: e.target.value })} className="w-full h-11 px-4 rounded-lg border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none" required />

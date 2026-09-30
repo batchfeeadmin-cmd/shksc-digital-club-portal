@@ -18,7 +18,8 @@ import {
   Database,
   CalendarDays,
   CalendarCheck,
-  Mail
+  Mail,
+  BadgePercent
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { SchoolLogo } from '../ui/SchoolLogo';
@@ -46,6 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     { name: 'Club Admins', icon: <UserCog size={20} />, path: '/admin/root/club-admins', requiredPerm: 'students_clubs' },
     { name: 'Fee Management', icon: <CircleDollarSign size={20} />, path: '/admin/root/fee-management', requiredPerm: 'payments' },
     { name: 'Payments', icon: <CreditCard size={20} />, path: '/admin/root/payments', requiredPerm: 'payments' },
+    { name: 'Student Discounts', icon: <BadgePercent size={20} />, path: '/admin/root/discounts', requireRoot: true },
     { name: 'Finance & Vouchers', icon: <ReceiptText size={20} />, path: '/admin/root/finance', requiredPerm: 'payments' },
     { name: 'Batches & Attendance', icon: <CalendarCheck size={20} />, path: '/admin/root/batches', requiredPerm: 'students_clubs' },
     { name: 'Approval Requests', icon: <CheckSquare size={20} />, path: '/admin/root/approvals', requiredPerm: 'students_clubs' },

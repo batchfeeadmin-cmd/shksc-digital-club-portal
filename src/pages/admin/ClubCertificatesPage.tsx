@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AdminLayout } from '../../components/admin/AdminLayout';
+import { ClubAdminLayout } from '../../components/admin/ClubAdminLayout';
 import { Award, Plus, Search, Trash2, Printer, CheckCircle2 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { useAuth } from '../../context/AuthContext';
@@ -105,8 +105,8 @@ export function ClubCertificatesPage() {
   }
 
   return (
-    <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
+    <ClubAdminLayout>
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center mb-8">
         <div>
           <h2 className="text-2xl font-heading font-bold text-primary-950 mb-1">Certificates</h2>
           <p className="text-sm text-gray-500">Issue digital certificates for events and workshops.</p>
@@ -225,6 +225,6 @@ export function ClubCertificatesPage() {
           })
         )}
       </div>
-    </AdminLayout>
+    </ClubAdminLayout>
   );
 }

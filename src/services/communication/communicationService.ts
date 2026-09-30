@@ -13,6 +13,7 @@ export interface CommunicationMessage {
   body: string;
   sender: string;
   sentAt: string;
+  clubId?: string;
 }
 
 export const getCommunications = (): CommunicationMessage[] => {
@@ -30,7 +31,8 @@ export const sendCommunication = (
   audience: CommunicationAudience,
   subject: string,
   body: string,
-  sender: string
+  sender: string,
+  clubId?: string
 ): CommunicationMessage => {
   const messages = getCommunications();
   
@@ -41,7 +43,8 @@ export const sendCommunication = (
     subject,
     body,
     sender,
-    sentAt: new Date().toISOString()
+    sentAt: new Date().toISOString(),
+    clubId
   };
   
   messages.push(newMessage);
@@ -50,13 +53,14 @@ export const sendCommunication = (
   return newMessage;
 };
 
-export const getSystemAlertsForStudent = (studentStatus: 'Pending' | 'Confirmed'): CommunicationMessage[] => {
+export const getSystemAlertsForStudent = (studentStatus: 'Pending' | 'Confirmed', clubId?: string): CommunicationMessage[] => {
   const messages = getCommunications();
   return messages.filter(msg => {
     if (msg.channel !== 'System Alert') return false;
     if (msg.audience === 'All Students') return true;
     if (msg.audience === 'Pending Payment Students' && studentStatus === 'Pending') return true;
     if (msg.audience === 'Confirmed Students' && studentStatus === 'Confirmed') return true;
+    if (msg.clubId && clubId && msg.clubId === clubId) return true;
     return false;
   }).sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
 };

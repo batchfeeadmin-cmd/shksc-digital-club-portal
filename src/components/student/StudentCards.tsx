@@ -36,7 +36,7 @@ export const RegistrationCard: React.FC<{ clubName: string, status: string }> = 
   </div>
 );
 
-export const FeeSummary: React.FC<{ regFee: number, affilCost: number, total: number, status: string }> = ({ regFee, affilCost, total, status }) => (
+export const FeeSummary: React.FC<{ regFee: number, affilCost: number, total: number, status: string, discountAmount?: number, discountReason?: string }> = ({ regFee, affilCost, total, status, discountAmount = 0, discountReason }) => (
   <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col h-full">
     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Fee Summary</h3>
     <div className="space-y-3 mb-4">
@@ -44,6 +44,7 @@ export const FeeSummary: React.FC<{ regFee: number, affilCost: number, total: nu
         <span className="text-gray-600">Registration Fee</span>
         <span className="font-medium text-gray-900">{regFee} TK</span>
       </div>
+      {discountAmount > 0 && <div className="flex justify-between rounded-lg bg-green-50 p-2 text-green-700"><span>Approved Discount{discountReason ? ` · ${discountReason}` : ''}</span><span className="font-bold">- {discountAmount} TK</span></div>}
       <div className="flex justify-between">
         <span className="text-gray-600">Affiliation Cost</span>
         <span className="font-medium text-gray-900">{affilCost} TK</span>
@@ -100,9 +101,11 @@ export const ReceiptCard: React.FC<{
   regFee: number;
   affilCost: number;
   total: number;
+  discountAmount?: number;
+  discountReason?: string;
   txnId: string;
   onDownload?: () => void;
-}> = ({ name, clubName, regFee, affilCost, total, txnId, onDownload }) => (
+}> = ({ name, clubName, regFee, affilCost, total, discountAmount = 0, discountReason, txnId, onDownload }) => (
   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
      <div className="bg-primary-50 p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
        <div>
@@ -118,6 +121,7 @@ export const ReceiptCard: React.FC<{
          <span className="text-gray-500">Student Name</span>
          <span className="font-medium text-gray-900 text-right">{name}</span>
        </div>
+       {discountAmount > 0 && <div className="flex justify-between border-b border-green-100 bg-green-50 p-3 text-green-700"><span>Student Discount{discountReason ? ` · ${discountReason}` : ''}</span><span className="font-bold">- {discountAmount} TK</span></div>}
        <div className="flex justify-between border-b border-gray-50 pb-4">
          <span className="text-gray-500">Club</span>
          <span className="font-medium text-gray-900 text-right">{clubName}</span>

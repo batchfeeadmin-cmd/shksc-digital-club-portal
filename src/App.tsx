@@ -36,6 +36,8 @@ const RootClubsPage = lazyNamed(() => import('./pages/admin/RootClubsPage'), 'Ro
 const RootPaymentsPage = lazyNamed(() => import('./pages/admin/RootPaymentsPage'), 'RootPaymentsPage');
 const RootFinancePage = lazyNamed(() => import('./pages/admin/RootFinancePage'), 'RootFinancePage');
 const ClubFinancePage = lazyNamed(() => import('./pages/admin/ClubFinancePage'), 'ClubFinancePage');
+const RootDiscountsPage = lazyNamed(() => import('./pages/admin/RootDiscountsPage'), 'RootDiscountsPage');
+const ClubDiscountsPage = lazyNamed(() => import('./pages/admin/ClubDiscountsPage'), 'ClubDiscountsPage');
 const ClubBatchesPage = lazyNamed(() => import('./pages/admin/ClubBatchesPage'), 'ClubBatchesPage');
 const RootBatchesPage = lazyNamed(() => import('./pages/admin/RootBatchesPage'), 'RootBatchesPage');
 const RootReportsPage = lazyNamed(() => import('./pages/admin/RootReportsPage'), 'RootReportsPage');
@@ -123,6 +125,7 @@ export default function App() {
               <Route path="/admin/root/registration-control" element={<RegistrationControlPage />} />
               <Route path="/admin/root/sub-admins" element={<RootSubAdminsPage />} />
               <Route path="/admin/root/settings" element={<RootSettingsPage />} />
+              <Route path="/admin/root/discounts" element={<RootDiscountsPage />} />
             </Route>
 
             <Route element={<ProtectedRoute requiredPermission="students_clubs" />}>
@@ -171,6 +174,7 @@ export default function App() {
             <Route path="/admin/club/requests" element={<ClubRequestsPage />} />
             <Route path="/admin/club/payments" element={<ClubPaymentsPage />} />
             <Route path="/admin/club/finance" element={<ClubFinancePage />} />
+            <Route path="/admin/club/discounts" element={<ClubDiscountsPage />} />
             <Route path="/admin/club/batches" element={<ClubBatchesPage />} />
             <Route path="/admin/club/events" element={<ClubEventsPage />} />
             <Route path="/admin/club/committee" element={<ClubCommitteePage />} />

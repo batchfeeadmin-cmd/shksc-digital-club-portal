@@ -27,7 +27,9 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick, title = 'Dash
             <Menu size={24} />
           </button>
         )}
-        <h1 className="text-xl font-heading font-bold text-primary-950 hidden sm:block">{title}</h1>
+        <h1 className="text-base sm:text-xl font-heading font-bold text-primary-950 truncate max-w-[165px] sm:max-w-none">
+          {title}
+        </h1>
       </div>
 
       <div className="flex items-center gap-4">

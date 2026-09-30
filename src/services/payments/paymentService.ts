@@ -3,6 +3,7 @@ import { triggerStateUpdate } from '../base';
 import { getClubs } from '../clubs/clubService';
 import { createApprovalRequest } from '../approvals/approvalService';
 import { updateStudent } from '../students/studentService';
+import { getApprovedDiscountForStudent, markDiscountUsed } from '../discounts/discountService';
 
 const FEES_STORAGE_KEY = 'shksc_club_fees';
 const FEES_VERSION = 2;
@@ -258,13 +259,19 @@ export const confirmPayment = (
   studentName: string,
   clubName: string
 ): Payment => {
+  const approvedDiscount = getApprovedDiscountForStudent(student.studentId, clubId);
+  const payableAmount = approvedDiscount?.finalAmount ?? amount;
   const payment: Payment = {
     id: `pay-${Date.now()}`,
     studentId: student.studentId,
     clubId,
     studentName,
     clubName,
-    amount,
+    amount: payableAmount,
+    originalAmount: approvedDiscount?.originalAmount ?? amount,
+    discountAmount: approvedDiscount?.discountAmount ?? 0,
+    discountReason: approvedDiscount ? [approvedDiscount.reason, approvedDiscount.reasonDetails].filter(Boolean).join(' — ') : undefined,
+    discountId: approvedDiscount?.id,
     status: 'Paid',
     transactionId,
     method,
@@ -272,6 +279,7 @@ export const confirmPayment = (
   };
 
   recordPayment(payment);
+  if (approvedDiscount) markDiscountUsed(approvedDiscount.id, transactionId);
   updateStudent(student.studentId, {
     registrationStatus: 'Confirmed',
     receiptTxnId: transactionId

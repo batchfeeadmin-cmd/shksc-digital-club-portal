@@ -1,26 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { AdminLayout } from '../../components/admin/AdminLayout';
-import { Calendar, Plus, Users, Trash2, MapPin, Clock, CalendarDays, CheckCircle2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Calendar, CalendarDays, Clock, MapPin, Plus, RotateCcw, Search, Trash2, Users, X } from 'lucide-react';
+import { ClubAdminLayout } from '../../components/admin/ClubAdminLayout';
 import { Button } from '../../components/ui/button';
 import { useAuth } from '../../context/AuthContext';
-import { getEventsByClub, createEvent, deleteEvent, ClubEvent } from '../../services/events/eventService';
+import { getEventsByClub, createEvent, deleteEvent, type ClubEvent } from '../../services/events/eventService';
+
+type EventFilter = 'All' | 'Upcoming' | 'Past';
+
+const getLocalDate = () => {
+  const date = new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
 
 export function ClubEventsPage() {
   const { user } = useAuth();
+  const today = getLocalDate();
   const [events, setEvents] = useState<ClubEvent[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  
-  // Form State
+  const [filter, setFilter] = useState<EventFilter>('Upcoming');
+  const [searchTerm, setSearchTerm] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [venue, setVenue] = useState('');
   const [maxCapacity, setMaxCapacity] = useState('');
+  const [message, setMessage] = useState('');
 
   const loadEvents = () => {
     if (user?.clubId) {
-      setEvents(getEventsByClub(user.clubId).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      setEvents(getEventsByClub(user.clubId).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
     }
   };
 
@@ -28,154 +37,100 @@ export function ClubEventsPage() {
     loadEvents();
     window.addEventListener('shksc_state_changed', loadEvents);
     return () => window.removeEventListener('shksc_state_changed', loadEvents);
-  }, [user]);
+  }, [user?.clubId]);
 
-  const handleCreateEvent = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user?.clubId) return;
+  const upcomingEvents = events.filter(event => event.date >= today);
+  const pastEvents = events.filter(event => event.date < today);
+  const totalRsvps = events.reduce((sum, event) => sum + event.rsvps.length, 0);
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredEvents = events.filter(event => {
+    const matchesTime = filter === 'All' || (filter === 'Upcoming' ? event.date >= today : event.date < today);
+    const searchable = [event.title, event.description, event.venue, event.date].join(' ').toLowerCase();
+    return matchesTime && (!normalizedSearch || searchable.includes(normalizedSearch));
+  });
 
-    createEvent({
-      clubId: user.clubId,
-      title,
-      description,
-      date,
-      time,
-      venue,
-      maxCapacity: maxCapacity ? parseInt(maxCapacity) : undefined
-    });
-
+  const resetForm = () => {
     setTitle('');
     setDescription('');
     setDate('');
     setTime('');
     setVenue('');
     setMaxCapacity('');
+  };
+
+  const handleCreateEvent = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!user?.clubId) return;
+    createEvent({
+      clubId: user.clubId,
+      title: title.trim(),
+      description: description.trim(),
+      date,
+      time,
+      venue: venue.trim(),
+      maxCapacity: maxCapacity ? Number(maxCapacity) : undefined
+    });
+    resetForm();
     setShowAddForm(false);
+    setFilter('Upcoming');
+    setMessage('Event published successfully.');
+    setTimeout(() => setMessage(''), 4000);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to cancel and delete this event?')) {
-      deleteEvent(id);
-    }
+    if (window.confirm('Are you sure you want to delete this event?')) deleteEvent(id);
   };
 
   return (
-    <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-2xl font-heading font-bold text-primary-950 mb-1">Events & Workshops</h2>
-          <p className="text-sm text-gray-500">Manage internal club events, bootcamps, and track RSVPs.</p>
-        </div>
-        {!showAddForm && (
-          <Button onClick={() => setShowAddForm(true)} className="bg-primary-950 hover:bg-primary-900 text-white">
-            <Plus className="w-4 h-4 mr-2" /> Create Event
-          </Button>
-        )}
+    <ClubAdminLayout>
+      <div className="mb-7 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div><h2 className="text-2xl font-heading font-bold text-primary-950">Events & Workshops</h2><p className="mt-1 text-sm text-gray-500">Publish club events and monitor student RSVP interest.</p></div>
+        <Button onClick={() => setShowAddForm(true)} className="gap-2"><Plus size={16} /> Create Event</Button>
+      </div>
+
+      {message && <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">{message}</div>}
+
+      <div className="mb-5 grid grid-cols-3 gap-3">
+        <button type="button" onClick={() => setFilter('All')} className={`rounded-xl border p-4 text-left ${filter === 'All' ? 'border-primary-300 bg-primary-50 ring-2 ring-primary-100' : 'border-gray-100 bg-white'}`}><span className="text-2xl font-bold text-primary-950">{events.length}</span><span className="mt-1 block text-xs font-semibold text-gray-500">All Events</span></button>
+        <button type="button" onClick={() => setFilter('Upcoming')} className={`rounded-xl border p-4 text-left ${filter === 'Upcoming' ? 'border-blue-300 bg-blue-50 ring-2 ring-blue-100' : 'border-gray-100 bg-white'}`}><span className="text-2xl font-bold text-blue-700">{upcomingEvents.length}</span><span className="mt-1 block text-xs font-semibold text-gray-500">Upcoming</span></button>
+        <button type="button" onClick={() => setFilter('Past')} className={`rounded-xl border p-4 text-left ${filter === 'Past' ? 'border-gray-300 bg-gray-50 ring-2 ring-gray-100' : 'border-gray-100 bg-white'}`}><span className="text-2xl font-bold text-gray-700">{pastEvents.length}</span><span className="mt-1 block text-xs font-semibold text-gray-500">Past</span></button>
+      </div>
+
+      <div className="mb-6 flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 sm:flex-row sm:items-center">
+        <div className="relative flex-1"><Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" /><input type="search" value={searchTerm} onChange={event => setSearchTerm(event.target.value)} placeholder="Search event or venue..." className="h-11 w-full rounded-lg border border-gray-200 pl-10 pr-3 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100" /></div>
+        <div className="rounded-lg bg-slate-50 px-4 py-2 text-sm font-semibold text-gray-600"><Users size={16} className="mr-2 inline text-accent-600" />{totalRsvps} total RSVPs</div>
+        {(searchTerm || filter !== 'Upcoming') && <Button variant="ghost" onClick={() => { setSearchTerm(''); setFilter('Upcoming'); }} className="gap-2"><RotateCcw size={15} /> Reset</Button>}
       </div>
 
       {showAddForm && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-          <h3 className="font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">Create New Event</h3>
-          <form onSubmit={handleCreateEvent} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Event Title</label>
-                <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Robotics Workshop 2026" className="w-full h-11 px-4 rounded-xl border border-gray-200 focus:border-primary-500 outline-none" required />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Date</label>
-                <div className="relative">
-                  <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 focus:border-primary-500 outline-none" required />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Time</label>
-                <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input type="time" value={time} onChange={e => setTime(e.target.value)} className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 focus:border-primary-500 outline-none" required />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Venue</label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input type="text" value={venue} onChange={e => setVenue(e.target.value)} placeholder="e.g. Physics Lab" className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 focus:border-primary-500 outline-none" required />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Max Capacity (Optional)</label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input type="number" value={maxCapacity} onChange={e => setMaxCapacity(e.target.value)} placeholder="Leave blank for unlimited" className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 focus:border-primary-500 outline-none" />
-                </div>
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
-                <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Event details and agenda..." className="w-full h-24 p-4 rounded-xl border border-gray-200 focus:border-primary-500 outline-none resize-none" required />
-              </div>
-            </div>
-            
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-              <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
-              <Button type="submit" className="bg-primary-950 hover:bg-primary-900 text-white">Publish Event</Button>
-            </div>
-          </form>
-        </div>
+        <form onSubmit={handleCreateEvent} className="mb-7 rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-sm">
+          <div className="mb-5 flex items-center justify-between"><div><h3 className="font-bold text-gray-900">Create New Event</h3><p className="mt-1 text-xs text-gray-500">The event will be visible to students immediately.</p></div><button type="button" onClick={() => { setShowAddForm(false); resetForm(); }} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100" aria-label="Close event form"><X size={19} /></button></div>
+          <div className="grid gap-5 md:grid-cols-2">
+            <label className="text-sm font-semibold text-gray-700 md:col-span-2">Event title *<input type="text" value={title} onChange={event => setTitle(event.target.value)} placeholder="Robotics Workshop 2026" className="mt-2 h-11 w-full rounded-xl border border-gray-200 px-4 outline-none focus:border-primary-500" required /></label>
+            <label className="text-sm font-semibold text-gray-700">Date *<span className="relative mt-2 block"><CalendarDays className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" /><input type="date" min={today} value={date} onChange={event => setDate(event.target.value)} className="h-11 w-full rounded-xl border border-gray-200 pl-10 pr-4 outline-none focus:border-primary-500" required /></span></label>
+            <label className="text-sm font-semibold text-gray-700">Time *<span className="relative mt-2 block"><Clock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" /><input type="time" value={time} onChange={event => setTime(event.target.value)} className="h-11 w-full rounded-xl border border-gray-200 pl-10 pr-4 outline-none focus:border-primary-500" required /></span></label>
+            <label className="text-sm font-semibold text-gray-700">Venue *<span className="relative mt-2 block"><MapPin className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" /><input type="text" value={venue} onChange={event => setVenue(event.target.value)} placeholder="Physics Lab" className="h-11 w-full rounded-xl border border-gray-200 pl-10 pr-4 outline-none focus:border-primary-500" required /></span></label>
+            <label className="text-sm font-semibold text-gray-700">Maximum capacity<span className="relative mt-2 block"><Users className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" /><input type="number" min="1" value={maxCapacity} onChange={event => setMaxCapacity(event.target.value)} placeholder="Optional" className="h-11 w-full rounded-xl border border-gray-200 pl-10 pr-4 outline-none focus:border-primary-500" /></span></label>
+            <label className="text-sm font-semibold text-gray-700 md:col-span-2">Description *<textarea value={description} onChange={event => setDescription(event.target.value)} placeholder="Event details and agenda..." className="mt-2 h-24 w-full resize-none rounded-xl border border-gray-200 p-4 outline-none focus:border-primary-500" required /></label>
+          </div>
+          <div className="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-5"><Button type="button" variant="outline" onClick={() => { setShowAddForm(false); resetForm(); }}>Cancel</Button><Button type="submit">Publish Event</Button></div>
+        </form>
       )}
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {events.length === 0 && !showAddForm ? (
-          <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-2xl border border-dashed border-gray-200">
-            <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p>No upcoming events. Create one to get started!</p>
-          </div>
-        ) : (
-          events.map(event => {
-            const eventDate = new Date(event.date);
-            const isPast = eventDate < new Date(new Date().setHours(0,0,0,0));
-            
-            return (
-              <div key={event.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col relative overflow-hidden group">
-                {isPast && <div className="absolute top-4 right-4 bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded-md">Past Event</div>}
-                
-                <h3 className="font-bold text-gray-900 text-lg pr-20 leading-tight mb-2">{event.title}</h3>
-                <p className="text-sm text-gray-500 line-clamp-2 mb-4">{event.description}</p>
-                
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <CalendarDays className="w-4 h-4 text-primary-500" />
-                    <span className="font-medium">{eventDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                    <span className="text-gray-300">•</span>
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <MapPin className="w-4 h-4 text-primary-500" />
-                    <span>{event.venue}</span>
-                  </div>
-                </div>
-
-                <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="bg-accent-50 text-accent-600 p-2 rounded-lg">
-                      <Users className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">RSVPs</p>
-                      <p className="font-bold text-gray-900 leading-none">
-                        {event.rsvps.length} <span className="text-gray-400 font-normal text-xs">{event.maxCapacity ? `/ ${event.maxCapacity}` : ''}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <button onClick={() => handleDelete(event.id)} className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50">
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            );
-          })
-        )}
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {filteredEvents.map(event => {
+          const isPast = event.date < today;
+          return (
+            <article key={event.id} className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+              <div className="mb-3 flex items-start justify-between gap-3"><div><span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${isPast ? 'bg-gray-100 text-gray-600' : 'bg-blue-100 text-blue-700'}`}>{isPast ? 'Past' : 'Upcoming'}</span><h3 className="mt-3 text-lg font-bold leading-tight text-gray-900">{event.title}</h3></div><button type="button" onClick={() => handleDelete(event.id)} className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-500" aria-label={`Delete ${event.title}`}><Trash2 size={17} /></button></div>
+              <p className="mb-4 line-clamp-2 text-sm text-gray-500">{event.description}</p>
+              <div className="mb-5 space-y-2 text-sm text-gray-600"><p className="flex items-center gap-2"><CalendarDays size={16} className="text-primary-500" />{new Date(`${event.date}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {event.time}</p><p className="flex items-center gap-2"><MapPin size={16} className="text-primary-500" />{event.venue}</p></div>
+              <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-4"><span className="text-xs font-bold uppercase tracking-wider text-gray-400">Student RSVPs</span><span className="font-bold text-primary-950">{event.rsvps.length}{event.maxCapacity ? ` / ${event.maxCapacity}` : ''}</span></div>
+            </article>
+          );
+        })}
+        {filteredEvents.length === 0 && <div className="col-span-full rounded-2xl border border-dashed border-gray-200 bg-white py-12 text-center text-gray-500"><Calendar className="mx-auto mb-3 h-10 w-10 text-gray-300" /><p>{events.length === 0 ? 'No events yet. Create one to get started.' : 'No events match the current view.'}</p></div>}
       </div>
-    </AdminLayout>
+    </ClubAdminLayout>
   );
 }
